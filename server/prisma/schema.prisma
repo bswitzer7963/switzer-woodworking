@@ -1,0 +1,11 @@
+//https://devsheets.io/sheets/prisma
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
