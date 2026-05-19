@@ -8,7 +8,7 @@ export default function NavBar({curState, setCurState, curUser, setCurUser}) {
     }
 
     function handleLogin() {
-        setCurState('welcome');
+        setCurState({curView: 'auth', spec: 'main'});
     }
 
     let greeting = null;
@@ -19,7 +19,6 @@ export default function NavBar({curState, setCurState, curUser, setCurUser}) {
             </h1>
         );
     }
-
 
     return (
         <div id="navbar">

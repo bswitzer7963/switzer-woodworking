@@ -2,7 +2,10 @@ import { useState, useEffect } from 'react';
 import NavBar from './components/navbar.jsx';
 import MainView from './components/viewtypes/mainView.jsx';
 import Footer from './components/footer.jsx';
+import ForSaleView from  './components/viewtypes/forSaleView.jsx';
+import AuthView from  './components/viewtypes/authView.jsx';
 import './App.css';
+
 
 function App() {
   const [curState, setCurState] = useState({curView: 'main', spec: null});
@@ -11,12 +14,12 @@ function App() {
   let showNav = <NavBar 
     curUser={curUser}
     curState={curState}
-    setCurUser={curUser}
-    setCurState={curState}
+    setCurUser={setCurUser}
+    setCurState={setCurState}
   />
   let showFooter = <Footer
     curState={curState}
-    setCurState={curState}
+    setCurState={setCurState}
   />
   
   if (curState.curView === 'auth') {
@@ -27,7 +30,7 @@ function App() {
   return (
     <div id="app">
       {showNav}
-      <ContentBox curUser={curUser} curState={curState} setCurUser={curUser} setCurState={curState}/>
+      <ContentBox curUser={curUser} curState={curState} setCurUser={setCurUser} setCurState={setCurState}/>
       {showFooter}
     </div>
   )
@@ -39,53 +42,61 @@ function ContentBox({curState, setCurState, curUser, setCurUser}) {
       return <MainView 
         curUser={curUser}
         curState={curState}
-        setCurUser={curUser}
-        setCurState={curState}
+        setCurUser={setCurUser}
+        setCurState={setCurState}
       />
-    case 'listings':
+    case 'for-sale':
       return <ForSaleView 
         curUser={curUser}
         curState={curState}
-        setCurUser={curUser}
-        setCurState={curState}
+        setCurUser={setCurUser}
+        setCurState={setCurState}
+      />
+    case 'listing':
+      return <ForSaleView 
+        curUser={curUser}
+        curState={curState}
+        setCurUser={setCurUser}
+        setCurState={setCurState}
       />
     case 'custom':
       return <MainView 
         curUser={curUser}
         curState={curState}
-        setCurUser={curUser}
-        setCurState={curState}
+        setCurUser={setCurUser}
+        setCurState={setCurState}
       />
     case 'account':
       return <MainView 
         curUser={curUser}
         curState={curState}
-        setCurUser={curUser}
-        setCurState={curState}
+        setCurUser={setCurUser}
+        setCurState={setCurState}
       />
     case 'auth':
-      return <MainView 
+      return <AuthView 
         curUser={curUser}
         curState={curState}
-        setCurUser={curUser}
-        setCurState={curState}
+        setCurUser={setCurUser}
+        setCurState={setCurState}
       />
     case 'info':
       return <MainView 
         curUser={curUser}
         curState={curState}
-        setCurUser={curUser}
-        setCurState={curState}
+        setCurUser={setCurUser}
+        setCurState={setCurState}
       />
     case 'emmet-dash':
       return <MainView 
         curUser={curUser}
         curState={curState}
-        setCurUser={curUser}
-        setCurState={curState}
+        setCurUser={setCurUser}
+        setCurState={setCurState}
       />
     default:
       throw new Error("Unrecognized Viewtype", curState.curView);
   }
 }
+
 export default App

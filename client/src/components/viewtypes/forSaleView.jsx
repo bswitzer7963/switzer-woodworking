@@ -1,6 +1,5 @@
 import {useState, useEffect} from 'react';
-import api from '../api.js'
-import axios from 'axios';
+import api from '../../api.js'
 
 export default function MainView({curState, setCurState, curUser, setCurUser}) {
     const [curForSale, setCurForSale] = useState([]);
@@ -17,6 +16,13 @@ export default function MainView({curState, setCurState, curUser, setCurUser}) {
 
     function handleSaleButton(specListing) {
         setCurState({curView: 'listing', spec: specListing});
+    }
+
+    if (curForSale == []) {
+        listedListings = 
+            <h1>
+                Sorry, there are no listings yet...
+            </h1>
     }
 
     const listedListings = curForSale.map((listing) => {
