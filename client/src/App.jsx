@@ -1,14 +1,34 @@
-import { useState, useEffect } from 'react'
-import './App.css'
+import { useState, useEffect } from 'react';
+import NavBar from './components/navbar.jsx';
+import MainView from './components/viewtypes/mainView.jsx';
+import Footer from './components/footer.jsx';
+import './App.css';
 
 function App() {
-  const [curState, setCurState] = useState({curView: 'main', spec: specType});
+  const [curState, setCurState] = useState({curView: 'main', spec: null});
   const [curUser, setCurUser] = useState(null);
+
+  let showNav = <NavBar 
+    curUser={curUser}
+    curState={curState}
+    setCurUser={curUser}
+    setCurState={curState}
+  />
+  let showFooter = <Footer
+    curState={curState}
+    setCurState={curState}
+  />
+  
+  if (curState.curView === 'auth') {
+    showNav = null;
+    showFooter = null;
+  }
 
   return (
     <div id="app">
-      <NavBar curUser={curUser} curState={curState} setCurUser={curUser} setCurState={curState}/>
+      {showNav}
       <ContentBox curUser={curUser} curState={curState} setCurUser={curUser} setCurState={curState}/>
+      {showFooter}
     </div>
   )
 }
@@ -23,7 +43,7 @@ function ContentBox({curState, setCurState, curUser, setCurUser}) {
         setCurState={curState}
       />
     case 'listings':
-      return <MainView 
+      return <ForSaleView 
         curUser={curUser}
         curState={curState}
         setCurUser={curUser}

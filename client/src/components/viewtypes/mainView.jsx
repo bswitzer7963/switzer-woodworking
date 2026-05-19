@@ -3,18 +3,20 @@ import axios from 'axios';
 
 //LOOKAT CHANGE FOR SALE TO TOP 3, MOVE FILTERS/SORT TO NEXT PAGE
 export default function MainView({curState, setCurState, curUser, setCurUser}) {
-    const [curExisting, setCurExisting] = useState([]);
+    const [curForSale, setCurForSale] = useState([]);
+
+    //Need axios get call to set curForSale (do only top 3 here)
 
     function handleCustom(specType) {
         setCurState({curView: 'custom', spec: specType});
     }
 
     function handleSaleButton(specListing) {
-        setCurState({curView: 'listings', spec: specListing});
+        setCurState({curView: 'listing', spec: specListing});
     }
-    
-    function handleFooterButton(specType) {
-        setCurState({curView: 'info', spec: specType});
+
+    function handleMoreForSale(specListing) {
+        setCurState({curView: 'for-sale', spec: null});
     }
 
     let inProgress;
@@ -31,8 +33,8 @@ export default function MainView({curState, setCurState, curUser, setCurUser}) {
             </>
     }
 
-    const listedListings = curExisting.map((listing) => {
-        <li key={curExisting.listingID}>
+    const listedListings = curForSale.map((listing) => {
+        <li key={curForSale.listingID}>
             <div className="listing-header">
                 <h1>
                     {listing.title}
@@ -42,7 +44,7 @@ export default function MainView({curState, setCurState, curUser, setCurUser}) {
                 </h1>  
             </div>
             <button id="listing-btn" onClick={() => handleSaleButton(listing)}>
-                See More
+                View
             </button>
         </li>
     });
@@ -105,20 +107,9 @@ export default function MainView({curState, setCurState, curUser, setCurUser}) {
             <ol id="for-sale">
                 {listedListings}
             </ol>
-            <button id="see-more-for-sale-btn">
+            <button id="see-more-for-sale-btn" onClick={() => handleMoreForSale()}>
                 See More
             </button>
-            <div id="info-section">
-                <button id="about" onClick={() => handleFooterButton('about')}>
-                    About
-                </button>
-                <button id="create-info" onClick={() => handleFooterButton('create-info')}>
-                    Creating this app
-                </button>
-                <button id="contact" onClick={() => handleFooterButton('contact')}>
-                    Contact Now
-                </button>
-            </div>
         </div>
     )
 }

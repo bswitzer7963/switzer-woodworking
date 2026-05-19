@@ -27,9 +27,23 @@ app.get('/users', async (req, res) => {
     }
 });
 
+app.get('/users/:id/saved', async (req, res) => {
+    try {
+        const user = await prisma.user.findUnique({where: {userID: req.params.id}});
+        if (!user) return res.status(404).json({error: "Failed to find user"});
+
+        let saved = user.savedProjects
+        res.json(saved);
+    }
+    catch (err) {
+        console.error("GET /users/:id/saved Error", err);
+        res.status(500).json({error: "Failed to GET savedProjects from User"});
+    }
+});
+
 app.get('/orders', async (req, res) => {
     try {
-        const orders = await prisma.req.findMany();
+        const orders = await prisma.submittedRequest.findMany();
 
         res.json(orders);
     }
@@ -39,6 +53,18 @@ app.get('/orders', async (req, res) => {
     }
 });
 
+
+app.get('/forsale', async (req, res) => {
+    try {
+        const forsale = await prisma.existingForSale.findMany();
+
+        res.json(forsale);
+    }
+    catch (err) {
+        console.error("GET /forsale error", err);
+        res.status(500).json({error: "Failed to GET /forsale"});
+    }
+});
 //will make once i have an idea of my system
 /* app.post('/orders', async (req, res) => {
     try {
