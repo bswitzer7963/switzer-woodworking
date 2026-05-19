@@ -1,21 +1,37 @@
 import {useState, useEffect} from 'react';
 import axios from 'axios';
 
-export default function ContentBox({curState, setCurState, curUser, setCurUser}) {
+//LOOKAT CHANGE FOR SALE TO TOP 3, MOVE FILTERS/SORT TO NEXT PAGE
+export default function MainView({curState, setCurState, curUser, setCurUser}) {
     const [curExisting, setCurExisting] = useState([]);
 
-    function handleCustom() {
-        setCurState('custom');
+    function handleCustom(specType) {
+        setCurState({curView: 'custom', spec: specType});
     }
 
-    function handleSaleButton() {
-        setCurState('listings');
+    function handleSaleButton(specListing) {
+        setCurState({curView: 'listings', spec: specListing});
     }
-    function handleFooterButton() {
-        setCurState('custom');
+    
+    function handleFooterButton(specType) {
+        setCurState({curView: 'info', spec: specType});
     }
 
-    const listed = curExisting.map((listing) => {
+    let inProgress;
+    if (curUser) {
+        inProgress =
+            <button id="see-existing-btn">
+                See {curUser.fName}'s Saved Projects
+            </button>
+    }
+    else {
+        inProgress = 
+            <>
+                Login To Save New or Resume Existing Projects
+            </>
+    }
+
+    const listedListings = curExisting.map((listing) => {
         <li key={curExisting.listingID}>
             <div className="listing-header">
                 <h1>
@@ -25,34 +41,37 @@ export default function ContentBox({curState, setCurState, curUser, setCurUser})
                     {listing.price}
                 </h1>  
             </div>
-            <button id="listing-btn" onClick={handleListing}>
+            <button id="listing-btn" onClick={() => handleSaleButton(listing)}>
                 See More
             </button>
         </li>
     });
 
     return (
-        <div id="content-box">
+        <div id="main-view">
+            <div id="in-progress">
+                {inProgress}
+            </div>
             <h1 id="new-proj-header">
                 Start New Project
             </h1>
             <div id="new-proj-btn-section">
-                <button id="new-cuttingboard-btn" onClick={() => handleStartNew('cuttingboard')}>
+                <button id="new-cuttingboard-btn" onClick={() => handleCustom('cuttingboard')}>
                     New Cutting Board
                 </button>
-                <button id="new-bat-btn" onClick={() => handleStartNew('bat')}>
+                <button id="new-bat-btn" onClick={() => handleCustom('bat')}>
                     New Bat
                 </button>
-                <button id="new-bowl-btn" onClick={() => handleStartNew('bowl')}>
+                <button id="new-bowl-btn" onClick={() => handleCustom('bowl')}>
                     New Bowl
                 </button>
-                <button id="new-sign-btn" onClick={() => handleStartNew('sign')}>
+                <button id="new-sign-btn" onClick={() => handleCustom('sign')}>
                     New Sign
                 </button>
-                <button id="new-emblem-btn" onClick={() => handleStartNew('emblem')}>
+                <button id="new-emblem-btn" onClick={() => handleCustom('emblem')}>
                     New Emblem
                 </button>
-                <button id="new-custom-btn" onClick={() => handleStartNew('custom')}>
+                <button id="new-custom-btn" onClick={() => handleCustom('custom')}>
                     New Custom Request
                 </button>
             </div>
@@ -68,7 +87,7 @@ export default function ContentBox({curState, setCurState, curUser, setCurUser})
                         Popular
                     </option>
                     <option value="price">
-                        Price ()
+                        Price
                     </option>
                     <option value="posted">
                         Posted Date
@@ -84,16 +103,19 @@ export default function ContentBox({curState, setCurState, curUser, setCurUser})
                 </select>           
             </div>
             <ol id="for-sale">
-                {listed}
+                {listedListings}
             </ol>
+            <button id="see-more-for-sale-btn">
+                See More
+            </button>
             <div id="info-section">
-                <button id="about">
+                <button id="about" onClick={() => handleFooterButton('about')}>
                     About
                 </button>
-                <button id="create-info">
+                <button id="create-info" onClick={() => handleFooterButton('create-info')}>
                     Creating this app
                 </button>
-                <button id="contact" onClick={sendTo}>
+                <button id="contact" onClick={() => handleFooterButton('contact')}>
                     Contact Now
                 </button>
             </div>

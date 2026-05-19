@@ -46,12 +46,14 @@ model User {
   pwHash String
   phNumber String?
 
-  orderHistory Req[]
+  orderHistory SubmittedRequest[]
 
+  savedProjects SavedProject[]
+  
   accType accType
 }
 
-model Req {
+model SubmittedRequest {
   reqID String @id @default(cuid())
 
   creatorID String
@@ -62,7 +64,7 @@ model Req {
   size sizeType?
   status projStatus @default(Pending) 
 
-  customImage String? //Would just store url for submitted image
+  customImage String[] //Would just store urls for submitted images
 
   whenSubmitted DateTime @default(now())
 }
@@ -76,7 +78,24 @@ model ExistingForSale {
   size sizeType?
   price String
 
-  image String?
+  image String[]
 
   whenMade DateTime @default(now())
+}
+
+model SavedProject {
+  savedID String @id @default(cuid())
+
+  creatorID String
+  creator User @relation(fields: [creatorID], references: [userID])
+
+  projTitle String
+  projectType projType
+  description String
+  size sizeType?
+
+  //Need to add the advanced info like where image is placed etc
+  image String[]
+
+  whenStarted DateTime @default(now())
 }
