@@ -97,5 +97,7 @@ model SavedProject {
   //Need to add the advanced info like where image is placed etc
   image String[]
 
+  snapshot String //Would be simply a snapshot of the current build for little thumbnail
+
   whenStarted DateTime @default(now())
 }

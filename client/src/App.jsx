@@ -4,6 +4,7 @@ import MainView from './components/viewtypes/mainView.jsx';
 import Footer from './components/footer.jsx';
 import ForSaleView from  './components/viewtypes/forSaleView.jsx';
 import AuthView from  './components/viewtypes/authView.jsx';
+import AccountView from  './components/viewtypes/accountView.jsx';
 import InfoView from  './components/viewtypes/infoView.jsx';
 import './App.css';
 
@@ -68,10 +69,8 @@ function ContentBox({curState, setCurState, curUser, setCurUser}) {
         setCurState={setCurState}
       />
     case 'account':
-      return <MainView 
+      return <AccountView 
         curUser={curUser}
-        curState={curState}
-        setCurUser={setCurUser}
         setCurState={setCurState}
       />
     case 'auth':

@@ -15,14 +15,10 @@ export default function MainView({curState, setCurState, curUser, setCurUser}) {
         setCurState({curView: 'listing', spec: specListing});
     }
 
-    function handleMoreForSale(specListing) {
-        setCurState({curView: 'for-sale', spec: null});
-    }
-
     let inProgress;
     if (curUser) {
         inProgress =
-            <button id="see-existing-btn">
+            <button id="see-existing-btn" onClick={() => setCurState({curView: 'account', spec: null})}>
                 See {curUser.fName}'s Saved Projects
             </button>
     }
@@ -107,7 +103,7 @@ export default function MainView({curState, setCurState, curUser, setCurUser}) {
             <ol id="for-sale">
                 {listedListings}
             </ol>
-            <button id="see-more-for-sale-btn" onClick={() => handleMoreForSale()}>
+            <button id="see-more-for-sale-btn" onClick={() => setCurState({curView: 'for-sale', spec: null})}>
                 See More
             </button>
         </div>

@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
 import api from '../../api.js'
 
-export default function MainView({curState, setCurState, curUser, setCurUser}) {
+export default function ForSaleView({setCurState}) {
     const [curForSale, setCurForSale] = useState([]);
 
     useEffect(() => {
@@ -18,32 +18,31 @@ export default function MainView({curState, setCurState, curUser, setCurUser}) {
         setCurState({curView: 'listing', spec: specListing});
     }
 
-    if (curForSale == []) {
+    let listedListings;
+    if (curForSale.length === 0) {
         listedListings = 
             <h1>
                 Sorry, there are no listings yet...
             </h1>
     }
-
-    const listedListings = curForSale.map((listing) => {
-        <li key={curForSale.existingID}>
-            <div className="listing-header">
-                <h1>
-                    {listing.title}
-                </h1>
-                <h1>
-                    {listing.price}
-                </h1>  
-            </div>
-            <button id="listing-btn" onClick={() => handleSaleButton(listing)}>
-                See More
-            </button>
-        </li>
-    });
+    else {
+        listedListings = curForSale.map((listing) => (
+            <li key={listing.existingID} onClick={() => handleSaleButton(listing)}>
+                <div className="listing-header">
+                    <h1>
+                        {listing.title}
+                    </h1>
+                    <h1>
+                        {listing.price}
+                    </h1>  
+                </div>
+            </li>
+        ));
+    }
 
     return (
-        <div id="for-sale-view" onClick={() => handleClickListingBox()}>
-            <h1 id="for-sale-section">
+        <div id="for-sale-view">
+            <h1 id="for-sale-header">
                 For Sale
             </h1>
             <h3 id="for-sale-desc">
