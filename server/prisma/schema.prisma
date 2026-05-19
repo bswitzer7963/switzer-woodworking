@@ -1,11 +1,101 @@
 //https://devsheets.io/sheets/prisma
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  url = env("DATABASE_URL")
 }
 
+enum projType {
+  Bowl
+  Bat
+  CuttingBoard
+  Sign
+  Emblem
+  Custom
+}
 
+enum accType {
+  Emmet
+  Customer
+  Admin
+}
+
+enum sizeType {
+  Small
+  Medium
+  Large
+  Custom
+}
+
+enum projStatus {
+  Pending
+  Accepted
+  StartedBuilding
+  ReadyToDeliver
+}
+
+model User {
+  userID String @id @default(cuid())
+
+  fName String
+  lName String
+  email String @unique
+  pwHash String
+  phNumber String?
+
+  orderHistory SubmittedRequest[]
+
+  savedProjects SavedProject[]
+  
+  accType accType
+}
+
+model SubmittedRequest {
+  reqID String @id @default(cuid())
+
+  creatorID String
+  creator User @relation(fields: [creatorID], references: [userID])
+
+  projectType projType
+  descriptionSpec String
+  size sizeType?
+  status projStatus @default(Pending) 
+
+  customImage String[] //Would just store urls for submitted images
+
+  whenSubmitted DateTime @default(now())
+}
+
+model ExistingForSale {
+  existingID String @id @default(cuid())
+
+  projTitle String
+  projectType projType
+  description String
+  size sizeType?
+  price String
+
+  image String[]
+
+  whenMade DateTime @default(now())
+}
+
+model SavedProject {
+  savedID String @id @default(cuid())
+
+  creatorID String
+  creator User @relation(fields: [creatorID], references: [userID])
+
+  projTitle String
+  projectType projType
+  description String
+  size sizeType?
+
+  //Need to add the advanced info like where image is placed etc
+  image String[]
+
+  whenStarted DateTime @default(now())
+}
