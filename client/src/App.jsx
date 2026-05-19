@@ -62,7 +62,7 @@ function ContentBox({curState, setCurState, curUser, setCurUser}) {
         setCurState={setCurState}
       />
     case 'custom':
-      return <MainView 
+      return <editCustomView
         curUser={curUser}
         curState={curState}
         setCurUser={setCurUser}
