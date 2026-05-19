@@ -78,7 +78,7 @@ app.get('/forsale', async (req, res) => {
 app.post('/login', async (req, res) =>  {
     try {
         const username = req.body.email;
-        const password = req.body.password;
+        const password = req.body.pw;
         const user = await prisma.user.findUnique({where: {email: username}});
 
         let pwCorrect;
@@ -149,7 +149,6 @@ app.post('/register', async (req, res) => {
         if (!validEmail.test(uEmail)) {
             return res.status(401).json({error: "Invalid Email"});
         }
-
         
         const salt = await bcrypt.genSalt(saltRounds);
         const pass = await bcrypt.hash(req.body.pw, salt);
