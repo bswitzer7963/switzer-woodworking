@@ -6,6 +6,7 @@ export default function AuthView({curState, setCurState, curUser, setCurUser}) {
         case 'main':
             return <WelcomeAuth
                 curUser={curUser}
+                setCurUser={setCurUser}
                 setCurState={setCurState}
                 />
         case 'login':
@@ -49,7 +50,7 @@ function WelcomeAuth({curUser, setCurUser, setCurState}) {
     let userName = curUser ? curUser.fName : 'Guest';
     let curOptions;
     if (curUser) {
-        greeting = `Hey ${userName}, We Missed You!`;
+        greeting = `Hey ${userName}, What would you like?`;
         curOptions = 
             <>
                 <button id="welcome-login-btn" onClick={() => handleClick('logout')}>

@@ -4,6 +4,7 @@ import MainView from './components/viewtypes/mainView.jsx';
 import Footer from './components/footer.jsx';
 import ForSaleView from  './components/viewtypes/forSaleView.jsx';
 import AuthView from  './components/viewtypes/authView.jsx';
+import InfoView from  './components/viewtypes/infoView.jsx';
 import './App.css';
 
 
@@ -81,12 +82,9 @@ function ContentBox({curState, setCurState, curUser, setCurUser}) {
         setCurState={setCurState}
       />
     case 'info':
-      return <MainView 
-        curUser={curUser}
+      return <InfoView
         curState={curState}
-        setCurUser={setCurUser}
-        setCurState={setCurState}
-      />
+        />
     case 'emmet-dash':
       return <MainView 
         curUser={curUser}

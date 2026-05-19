@@ -3,13 +3,27 @@ import axios from 'axios';
 
 export default function NavBar({curState, setCurState, curUser, setCurUser}) {
 
-    function handleContact() {
-
+    function handleClick(btn) {
+        switch(btn) {
+            case 'contact':
+                setCurState({curView: 'info', spec: 'contact'});
+                break;
+            case 'login':
+                setCurState({curView: 'auth', spec: 'main'});
+                break;
+            case 'home':
+                setCurState({curView: 'main', spec: null});
+                break;
+            default:
+                throw new Error("Unrecognized button in navbar");
+        }
     }
 
     function handleLogin() {
         setCurState({curView: 'auth', spec: 'main'});
     }
+
+
 
     let greeting = null;
     if (curUser) {
@@ -24,10 +38,13 @@ export default function NavBar({curState, setCurState, curUser, setCurUser}) {
         <div id="navbar">
             {greeting}
             <div id="nav-btns">
-                <button id="contact-btn" onClick={handleContact}>
+                <button id="home-btn" onClick={() => handleClick('home')}>
+                    Home
+                </button>
+                <button id="contact-btn" onClick={() => handleClick('contact')}>
                     Contact
                 </button>
-                <button id="login-btn" onClick={handleLogin}>
+                <button id="login-btn" onClick={() => handleLogin('login')}>
                     Login/Register
                 </button>
             </div>
