@@ -1,9 +1,20 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
+import DisplayModel from '../displayModel.jsx';
 import api from '../../api.js'
 
 export default function EditCustomView({curState, curUser, setCurState}) {
     const [imageArray, setImageArray] = useState([]);
-    switch(curState.spec) {
+    const [curProject, setCurProject] = useState({
+        projType: curState.spec || 'Board-Rect',
+        title: '',
+        description: '',
+        size: '',
+        images: [],
+        designPos: [],
+        status: 'Draft'
+    });
+
+    switch(curState.mode) {
         case 'image':
             return <ImageFilter 
                 curState={curState}
@@ -13,85 +24,98 @@ export default function EditCustomView({curState, curUser, setCurState}) {
                 />
         case 'edit':
             return <EditCustom 
+                curUser={curUser}
                 curState={curState}
                 setCurState={setCurState}
                 imageArray={imageArray}
                 setImageArray={setImageArray}
+                curProject={curProject}
+                setCurProject={setCurProject}
                 />
         default:
             throw new Error("Unrecognized spec in editCustomView");
     }
 }
 
-function EditCustom({curState, curUser, setCurState, imageArray, setImageArray}) {
-    const [curType, setCurType] = useState("");
-    const [curSize, setCurSize] = useState("");
-    const [title, setTitle] = useState("");
-    const [desc, setDesc] = useState("");
-    
+function EditCustom({curState, curUser, setCurState, imageArray, setImageArray, curProject, setCurProject}) {
     const [selectedDesign, setSelectedDesign] = useState(null);
-    const [tweakingDeco, setTweakingDeco] = useState(false);
 
-    function handleDelete(imgOfIminentDoomInd) {
-        e.propa
+    function updateProject(key, value) {
+        setCurProject(prev => ({...prev, [key]: value}))
+    }
+
+    function handleDelete(e, imgOfIminentDoomInd) {
+        e.stopPropagation();
         setImageArray(imageArray.filter((images, i) => i !== imgOfIminentDoomInd));
     }
-    
+
+    async function handleSaveProject() {
+        await api.post('/projects', {
+            ...curProject,
+            images: imageArray,
+            creatorID: curUser.userID
+        })
+    }
+
     const imageList = imageArray.map((image, i) => (
-        <li key={i} className="dash-deco-icon" onClick={() => setSelectedDesign(i)}>
-            src={image}
-            alt={`Design #${i+1}`}
+        <li key={i} className="dash-deco-opt" onClick={() => setSelectedDesign(i)} onDoubleClick={() => setCurState({...curState, mode: 'image'})}>
+            <img id="dash-deco-icon"
+                src={image}
+                alt={`Design #${i+1}`}
+            />
             <button id="delete-deco" onClick={(e) => handleDelete(e, i)}/>
         </li>
     ));
+    
     return (
         <div id="edit-view">
-            <DisplayModel projType="Bowl"/>
+            <DisplayModel projType={curProject.projType}/>
             <div id="edit-dash">
                 <button onClick={() => handleSaveProject()}>
                     Save
                 </button>
-                <select onChange={handleChangeType}>
-                    <option value="board-rect">
+                <select value={curProject.projType} onChange={(e) => updateProject('projType', e.target.value)}>
+                    <option value='Board-Rect'>
                         Rectangle CuttingBoard
                     </option>
-                    <option value="board-sq">
+                    <option value='Board-Square'>
                         Square CuttingBoard
                     </option>
-                    <option value="bat">
+                    <option value='Bat'>
                         Bat
                     </option>
-                    <option value="bowl">
+                    <option value='Bowl'>
                         Bowl
                     </option>
-                    <option value="emblem">
+                    <option value='Emblem'>
                         Emblem
                     </option>
-                    <option value="custom">
+                    <option value='Custom'>
                         Custom
                     </option>
                 </select>
                 <input 
                     id="project-title"
                     type="text"
-                    placeholder={`${curUser.fName}'s Masterpiece`}
-                    value={title}
+                    placeholder={`${curUser? curUser.fName : 'Guest'}'s Masterpiece`}
+                    value={curProject.title}
                     minLength="1"
                     maxLength="25"
-                    onChange={(e) => setTitle(e.target.value)}
+                    onChange={(e) => updateProject('title', e.target.value)}
                 />
                 <input 
                     id="project-desc"
                     type="text"
-                    placeholder={curUser.fName}
-                    value={title}
+                    placeholder="Leave any information you feel might be useful..."
+                    value={curProject.description}
                     maxLength="500"
-                    onChange={(e) => setTitle(e.target.value)}
+                    onChange={(e) => updateProject('description', e.target.value)}
                 />
-                <button id="new-image" disabled={imageArray.length > 2}>
+                <button id="new-image" disabled={imageArray.length > 2} onClick={() => setCurState({...curState, mode: 'image'})}>
                     New Image
                 </button>
                 <ol id="submitted-images">
+                    Double Click To Edit
                     {imageList}
                 </ol>
             </div>
@@ -103,11 +127,11 @@ function EditCustom({curState, curUser, setCurState, imageArray, setImageArray})
 //canvas goes as far as this watch. Didnt copy paste, but certainly a good amount of this is just watch and print lol
 //https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
 
-function ImageFilter({setCurState, imageArray, setImageArray}) {
+function ImageFilter({setCurState, imageArray, setImageArray, curProject}) {
     const canvasRef = useRef(null);
     const fileRef = useRef(null);
     const [image, setImage] = useState(null);
-    const [imageType, setImageType] = userState('logo');
+    const [imageType, setImageType] = useState('logo');
     const [settings, setSettings] = useState({
         saturation: 200,
         inversion: 0,
@@ -148,14 +172,13 @@ function ImageFilter({setCurState, imageArray, setImageArray}) {
         const canvas = canvasRef.current;
         canvas.toBlob((blob) => {
             const url = URL.createObjectURL(blob);
-            onChange({confirmed: true, url});
+            setImageArray([...imageArray, url]);
+            setCurState({curView: 'custom', spec: curProject, mode: 'edit'});
         }, 'image/png');
-        setImageArray([...imageArray, result.url]);
-        setCurState({curView: 'custom', spec: 'edit'});
     }
 
     function handleCancel() {
-        setCurState({curView: 'custom', spec: 'edit'});
+        setCurState({curView: 'custom', spec: curProject, mode: 'edit'});
     }
 
     function updateSetting(key, value) {
@@ -190,7 +213,6 @@ function ImageFilter({setCurState, imageArray, setImageArray}) {
                     type="checkbox"
                     className="slider round"
                     id="image-type"
-                    checked={setImageType('picture')}
                     onChange={(e) => setImageType(e.target.checked ? 'picture' : 'logo')}
                 />
                 <button onClick={handleCancel}>
@@ -205,5 +227,4 @@ function ImageFilter({setCurState, imageArray, setImageArray}) {
             </div>
         </div>
     )
-}
 }

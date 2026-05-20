@@ -6,9 +6,9 @@ import {Canvas} from '@react-three/fiber';
 import {OrbitControls, Environment, useGLTF, ContactShadows, useTexture} from '@react-three/drei';
 
 const modelOpts = [
+    {title:'Board-Rect', url: '/rectangle-cuttingboard.glb'},
     {title:'Bat', url: '/bat.glb'},
-    {title:'Bowl', url: '/bowl.glb'},
-    {title:'CuttingBoard-Rect', url: '/rectangle-cuttingboard.glb'}
+    {title:'Bowl', url: '/bowl.glb'}
 ];
 
 function Model({url}) {
@@ -22,7 +22,7 @@ export default function DisplayModel({projType, project, designs}) {
     const [isDecorating, setIsDecorating] = useState(false);
     const timer = useRef(null)
 
-    const curModel = modelOpts.find((type) => type.title === projType);
+    const curModel = modelOpts.find((type) => type.title === projType) || modelOpts[0];
 
     function handleClick() {
         if (!isDecorating) {
@@ -48,8 +48,18 @@ export default function DisplayModel({projType, project, designs}) {
         }
     }
 
-    let imageOpts = null;
-    //const imageOpts = designs.map(())
+    function handleReturnToOrigin() {
+        console.log('Send back to center')
+    }
+
+    function handleClearAll() {
+        console.log('Restart changes')
+    }
+
+    function handleExitView() {
+        console.log('Exit Fullscreen')
+    }
+    let imageOpts = null
 
     return (
         <div id="cavas-w-dash">

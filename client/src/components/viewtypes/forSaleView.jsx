@@ -15,7 +15,7 @@ export default function ForSaleView({setCurState}) {
     }, [])
 
     function handleSaleButton(specListing) {
-        setCurState({curView: 'listing', spec: specListing});
+        setCurState({curView: 'listing', spec: specListing, mode: null});
     }
 
     let listedListings;

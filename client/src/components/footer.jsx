@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export default function Footer({curState, setCurState, curUser, setCurUser}) {   
     function handleFooterButton(specType) {
-        setCurState({curView: 'info', spec: specType});
+        setCurState({curView: 'info', spec: specType, mode: null});
     }
 
     return ( 

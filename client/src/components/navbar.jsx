@@ -6,16 +6,13 @@ export default function NavBar({curState, setCurState, curUser, setCurUser}) {
     function handleClick(btn) {
         switch(btn) {
             case 'contact':
-                setCurState({curView: 'info', spec: 'contact'});
+                setCurState({curView: 'info', spec: 'contact', mode: null});
                 break;
             case 'login':
-                setCurState({curView: 'auth', spec: 'main'});
+                setCurState({curView: 'auth', spec: 'main', mode: null});
                 break;
             case 'home':
-                setCurState({curView: 'main', spec: null});
-                break;
-            case 'tweak':
-                setCurState({curView: 'image-proc-debug', spec: null});
+                setCurState({curView: 'main', spec: null, mode: null});
                 break;
             default:
                 throw new Error("Unrecognized button in navbar");
@@ -23,10 +20,8 @@ export default function NavBar({curState, setCurState, curUser, setCurUser}) {
     }
 
     function handleLogin() {
-        setCurState({curView: 'auth', spec: 'main'});
+        setCurState({curView: 'auth', spec: 'main', mode: null});
     }
-
-
 
     let greeting = null;
     if (curUser) {
@@ -49,9 +44,6 @@ export default function NavBar({curState, setCurState, curUser, setCurUser}) {
                 </button>
                 <button id="login-btn" onClick={() => handleLogin('login')}>
                     Login/Register
-                </button>
-                <button id="temp-imageproc-btn" onClick={() => handleClick('tweak')}>
-                    Tweak Images
                 </button>
             </div>
         </div>

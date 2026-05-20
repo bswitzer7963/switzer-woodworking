@@ -28,17 +28,17 @@ function WelcomeAuth({curUser, setCurUser, setCurState}) {
     function handleClick(btn) {
         switch(btn) {
             case 'login':
-                setCurState({curView: 'auth', spec: 'login'});
+                setCurState({curView: 'auth', spec: 'login', mode: null});
                 break;
             case 'register':
-                setCurState({curView: 'auth', spec: 'register'});
+                setCurState({curView: 'auth', spec: 'register', mode: null});
                 break;
             case 'continue':
-                setCurState({curView: 'main', spec: null});
+                setCurState({curView: 'main', spec: null, mode: null});
                 break;
             case 'logout':
                 setCurUser(null);
-                setCurState({curView: 'main', spec: null});
+                setCurState({curView: 'main', spec: null, mode: null});
                 break;
                 //Do logout axios call
             default: 
@@ -114,7 +114,7 @@ function Login({setCurUser, setCurState}) {
             //Set local token as the JWT
             localStorage.setItem("token", loginWorked.data.curToken);
             setCurUser(loginWorked.data.user);
-            setCurState({curView: "main", spec: null});
+            setCurState({curView: "main", spec: null, mode: null});
         }
         catch (err) {
             setErrors({serverRequest: err.response?.data?.error || "Server not responding in AuthView during Login"});
@@ -211,7 +211,7 @@ function Register({setCurState, setCurUser}) {
             localStorage.setItem("token", regWorked.data.curToken);
 
             setCurUser(regWorked.data.user);
-            setCurState({curView: 'main', spec: null});
+            setCurState({curView: 'main', spec: null, mode: null});
         }
         catch (err) {
             setErrors({serverRequest: err.response?.data?.error || "Server not responding in: AuthView during register"});

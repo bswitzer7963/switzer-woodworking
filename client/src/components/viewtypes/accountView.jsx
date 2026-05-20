@@ -15,7 +15,7 @@ export default function AccountView({curUser, setCurState}) {
     }, []);
 
     function handleClickSaved(specSaved) {
-        setCurState({curView: 'custom', spec: specSaved});
+        setCurState({curView: 'custom', spec: specSaved, mode: 'edit'});
     }
 
     let listedSaved;
@@ -25,7 +25,7 @@ export default function AccountView({curUser, setCurState}) {
                 <h2>
                     Seems like we haven't made any drafts yet, try making some on the home page!
                 </h2>
-                <button id="home-from-account" onClick={() => setCurState({curView: 'main', spec: null})}>
+                <button id="home-from-account" onClick={() => setCurState({curView: 'main', spec: null, mode: null})}>
                     To Home
                 </button>
             </>

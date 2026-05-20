@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import NavBar from './components/navbar.jsx';
 import MainView from './components/viewtypes/mainView.jsx';
+import EditCustomView from './components/viewtypes/editCustomView.jsx';
 import Footer from './components/footer.jsx';
 import ForSaleView from  './components/viewtypes/forSaleView.jsx';
 import AuthView from  './components/viewtypes/authView.jsx';
 import AccountView from  './components/viewtypes/accountView.jsx';
 import InfoView from  './components/viewtypes/infoView.jsx';
-import AdminEditorView from './components/viewtypes/adminEditorView.jsx';
 
 import './App.css';
 
@@ -66,7 +66,7 @@ function ContentBox({curState, setCurState, curUser, setCurUser}) {
         setCurState={setCurState}
       />
     case 'custom':
-      return <editCustomView
+      return <EditCustomView
         curUser={curUser}
         curState={curState}
         setCurUser={setCurUser}
@@ -95,8 +95,6 @@ function ContentBox({curState, setCurState, curUser, setCurUser}) {
         setCurUser={setCurUser}
         setCurState={setCurState}
       />
-    case 'image-proc-debug':
-      return <AdminEditorView/>
     default:
       throw new Error("Unrecognized Viewtype", curState.curView);
   }

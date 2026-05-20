@@ -8,17 +8,17 @@ export default function MainView({curState, setCurState, curUser, setCurUser}) {
     //Need axios get call to set curForSale (do only top 3 here)
 
     function handleCustom(specType) {
-        setCurState({curView: 'custom', spec: specType});
+        setCurState({curView: 'custom', spec: specType, mode: 'edit'});
     }
 
     function handleSaleButton(specListing) {
-        setCurState({curView: 'listing', spec: specListing});
+        setCurState({curView: 'listing', spec: specListing, mode: null});
     }
 
     let inProgress;
     if (curUser) {
         inProgress =
-            <button id="see-existing-btn" onClick={() => setCurState({curView: 'account', spec: null})}>
+            <button id="see-existing-btn" onClick={() => setCurState({curView: 'account', spec: null, mode: null})}>
                 See {curUser.fName}'s Saved Projects
             </button>
     }
@@ -103,7 +103,7 @@ export default function MainView({curState, setCurState, curUser, setCurUser}) {
             <ol id="for-sale">
                 {listedListings}
             </ol>
-            <button id="see-more-for-sale-btn" onClick={() => setCurState({curView: 'for-sale', spec: null})}>
+            <button id="see-more-for-sale-btn" onClick={() => setCurState({curView: 'for-sale', spec: null, mode: null})}>
                 See More
             </button>
         </div>
