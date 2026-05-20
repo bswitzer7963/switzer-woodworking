@@ -70,7 +70,7 @@ export default function MainView({curState, setCurState, curUser, setCurUser}) {
                     New Emblem
                 </button>
                 <button id="new-custom-btn" onClick={() => handleCustom('custom')}>
-                    New Custom Request
+                    New Custom Project
                 </button>
             </div>
             <h1 id="for-sale-section">

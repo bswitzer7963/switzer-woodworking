@@ -14,6 +14,9 @@ export default function NavBar({curState, setCurState, curUser, setCurUser}) {
             case 'home':
                 setCurState({curView: 'main', spec: null});
                 break;
+            case 'tweak':
+                setCurState({curView: 'image-proc-debug', spec: null});
+                break;
             default:
                 throw new Error("Unrecognized button in navbar");
         }
@@ -46,6 +49,9 @@ export default function NavBar({curState, setCurState, curUser, setCurUser}) {
                 </button>
                 <button id="login-btn" onClick={() => handleLogin('login')}>
                     Login/Register
+                </button>
+                <button id="temp-imageproc-btn" onClick={() => handleClick('tweak')}>
+                    Tweak Images
                 </button>
             </div>
         </div>

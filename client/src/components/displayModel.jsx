@@ -3,7 +3,7 @@
 
 import {useState, useRef} from 'react';
 import {Canvas} from '@react-three/fiber';
-import {OrbitControls, Environment, useGLTF, ContactShadows} from '@react-three/drei';
+import {OrbitControls, Environment, useGLTF, ContactShadows, useTexture} from '@react-three/drei';
 
 const modelOpts = [
     {title:'Bat', url: '/bat.glb'},
@@ -16,10 +16,12 @@ function Model({url}) {
     return <primitive object={scene}/>
 }
 
-export default function DisplayModel({projType}) {
+//remove projtype when able to send real project obj
+export default function DisplayModel({projType, project, designs}) {
     const [isSpinning, setIsSpinning] = useState(true);
     const [isDecorating, setIsDecorating] = useState(false);
     const timer = useRef(null)
+
     const curModel = modelOpts.find((type) => type.title === projType);
 
     function handleClick() {
@@ -46,8 +48,11 @@ export default function DisplayModel({projType}) {
         }
     }
 
+    let imageOpts = null;
+    //const imageOpts = designs.map(())
+
     return (
-        <div id="cavas-w-btns">
+        <div id="cavas-w-dash">
             <div id="three-canvas-space">
                 <Canvas camera={{position: [0, 2, 4], near: 0.025}}>
                     {/* <Environment files="/background.hdr" background blur={0.1}/> */}
@@ -64,9 +69,26 @@ export default function DisplayModel({projType}) {
                     />
                 </Canvas>
             </div>
-            <button id="toggle-dec-btn" onClick={() => toggleMode()}>
-                Toggle to: {isDecorating ? "Navigate Mode" : "Decorate Mode"}
-            </button>
+            <div id="canvas-dash">
+                <div id="canvas-dash-btns">
+                    <button id="toggle-dec-btn" onClick={() => toggleMode()}>
+                        Toggle to: {isDecorating ? "Navigate Mode" : "Decorate Mode"}
+                    </button>
+                    <button id="return-to-origin-btn" onClick={() => handleReturnToOrigin()}>
+                        Return To Origin
+                    </button>
+                    <button id="clear-all-btn" onClick={() => handleClearAll()}>
+                        Clear All
+                    </button>
+                    <button id="exit-model-view-btn" onClick={() => handleExitView()}>
+                        Exit Model View
+                    </button>
+                </div>
+                <ol>
+                    {imageOpts}
+                </ol>
+            </div>
+
         </div>
     )
 }

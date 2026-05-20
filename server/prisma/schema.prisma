@@ -11,7 +11,8 @@ datasource db {
 enum projType {
   Bowl
   Bat
-  CuttingBoard
+  CuttingBoardRect
+  CuttingBoardSquare
   Sign
   Emblem
   Custom
@@ -31,6 +32,7 @@ enum sizeType {
 }
 
 enum projStatus {
+  userSaved
   Pending
   Accepted
   StartedBuilding
@@ -46,27 +48,9 @@ model User {
   pwHash String
   phNumber String?
 
-  orderHistory SubmittedRequest[]
-
-  savedProjects SavedProject[]
+  savedProjects Project[]
   
   accType accType
-}
-
-model SubmittedRequest {
-  reqID String @id @default(cuid())
-
-  creatorID String
-  creator User @relation(fields: [creatorID], references: [userID])
-
-  projectType projType
-  descriptionSpec String
-  size sizeType?
-  status projStatus @default(Pending) 
-
-  customImage String[] //Would just store urls for submitted images
-
-  whenSubmitted DateTime @default(now())
 }
 
 model ExistingForSale {
@@ -78,24 +62,26 @@ model ExistingForSale {
   size sizeType?
   price String
 
-  image String[]
+  image String[] //Would just store urls for submitted images
 
   whenMade DateTime @default(now())
 }
 
-model SavedProject {
-  savedID String @id @default(cuid())
+model Project {
+  projID String @id @default(cuid())
 
   creatorID String
   creator User @relation(fields: [creatorID], references: [userID])
 
   projTitle String
-  projectType projType
+  projType projType
   description String
   size sizeType?
 
-  //Need to add the advanced info like where image is placed etc
+  status projStatus @default(userSaved)
+
   image String[]
+  imagePos Json? //Stores image location
 
   snapshot String //Would be simply a snapshot of the current build for little thumbnail
 

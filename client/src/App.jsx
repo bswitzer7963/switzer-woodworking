@@ -6,6 +6,8 @@ import ForSaleView from  './components/viewtypes/forSaleView.jsx';
 import AuthView from  './components/viewtypes/authView.jsx';
 import AccountView from  './components/viewtypes/accountView.jsx';
 import InfoView from  './components/viewtypes/infoView.jsx';
+import AdminEditorView from './components/viewtypes/adminEditorView.jsx';
+
 import './App.css';
 
 import DisplayModel from './components/displayModel.jsx';
@@ -32,12 +34,11 @@ function App() {
   }
 
   return (
-/*     <div id="app">
+    <div id="app">
       {showNav}
       <ContentBox curUser={curUser} curState={curState} setCurUser={setCurUser} setCurState={setCurState}/>
       {showFooter}
-    </div> */
-    <DisplayModel projType="Bowl"/>
+    </div>
   )
 }
 
@@ -94,6 +95,8 @@ function ContentBox({curState, setCurState, curUser, setCurUser}) {
         setCurUser={setCurUser}
         setCurState={setCurState}
       />
+    case 'image-proc-debug':
+      return <AdminEditorView/>
     default:
       throw new Error("Unrecognized Viewtype", curState.curView);
   }
