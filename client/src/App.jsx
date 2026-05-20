@@ -8,6 +8,8 @@ import AccountView from  './components/viewtypes/accountView.jsx';
 import InfoView from  './components/viewtypes/infoView.jsx';
 import './App.css';
 
+import DisplayModel from './components/displayModel.jsx';
+
 
 function App() {
   const [curState, setCurState] = useState({curView: 'main', spec: null});
@@ -30,11 +32,12 @@ function App() {
   }
 
   return (
-    <div id="app">
+/*     <div id="app">
       {showNav}
       <ContentBox curUser={curUser} curState={curState} setCurUser={setCurUser} setCurState={setCurState}/>
       {showFooter}
-    </div>
+    </div> */
+    <DisplayModel projType="Bowl"/>
   )
 }
 
