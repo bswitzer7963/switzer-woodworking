@@ -1,5 +1,6 @@
 import {useState, useEffect, useRef} from 'react';
 import DisplayModel from '../displayModel.jsx';
+import {removeBackground} from '@imgly/background-removal';
 import api from '../../api.js'
 
 export default function EditCustomView({curState, curUser, setCurState}) {
@@ -69,7 +70,7 @@ function EditCustom({curState, curUser, setCurState, imageArray, setImageArray, 
                 WRENCH
             </button>
             <img id="dash-deco-icon"
-                src={image}
+                src={image.filtered}
                 alt={`Design #${i+1}`}
             />
             <button id="delete-deco" onClick={(e) => handleDelete(e, i)}>
@@ -122,7 +123,10 @@ function EditCustom({curState, curUser, setCurState, imageArray, setImageArray, 
                     maxLength="500"
                     onChange={(e) => updateProject('description', e.target.value)}
                 />
-                <button id="new-image" disabled={imageArray.length > 2} onClick={() => setCurState({...curState, mode: 'image'})}>
+                <button id="new-image" disabled={imageArray.length > 2} onClick={() => {
+                    setCurState({...curState, mode: 'image'});
+                    setSelectedDesign(null);
+                }}>
                     New Image
                 </button>
                 <ol id="submitted-images">
@@ -142,6 +146,7 @@ function ImageFilter({curState, setCurState, imageArray, setImageArray, curProje
     const fileRef = useRef(null);
     const [image, setImage] = useState(null);
     const [imageType, setImageType] = useState('logo');
+    const [isLoading, setIsLoading] = useState(false);
     const [settings, setSettings] = useState({
         saturation: 200,
         inversion: 0,
@@ -155,7 +160,7 @@ function ImageFilter({curState, setCurState, imageArray, setImageArray, curProje
 
         const img = new Image();
         img.onload = () => setImage(img);
-        img.src = imageArray[selectedDesign];
+        img.src = imageArray[selectedDesign].orig;
     }, []);
 
     useEffect(() => {
@@ -178,16 +183,24 @@ function ImageFilter({curState, setCurState, imageArray, setImageArray, curProje
         return `saturate(${settings.saturation}%) invert(${settings.inversion}%) contrast(${settings.contrast}%) grayscale(${settings.grayscale}%)`;
     }
 
-    function handleFileChange(cur) {
+    async function handleFileChange(cur) {
         const imgFile = cur.target.files;
         if (!imgFile) return;
 
+        setIsLoading(true);
+        //Remove background with imgly, had to use small model cuz it took digustingly long with med
+        const imgWOBG = await removeBackground(imgFile[0], {model: 'small'});
+        const urlWOBG = URL.createObjectURL(imgWOBG);
+
         const img = new Image();
-        img.onload = () => setImage(img);
-        img.src = URL.createObjectURL(imgFile[0]);
+        img.onload = () => {
+            setImage(img);
+            setIsLoading(false);
+        };
+        img.src = urlWOBG;
     }
 
-    function handleSave() {
+    async function handleSave() {
         const canvas = canvasRef.current;
         canvas.toBlob((blob) => {
             const url = URL.createObjectURL(blob);
@@ -195,15 +208,16 @@ function ImageFilter({curState, setCurState, imageArray, setImageArray, curProje
             //Should probably switch to 1 indexing cuz this is ugly
             if (selectedDesign !== null) {
                 let temp = [...imageArray];
-                temp[selectedDesign] = url;
+                temp[selectedDesign] = {...temp[selectedDesign], filtered: url};
                 setImageArray(temp);
             }
             else {
-                setImageArray([...imageArray, url]);
+                setImageArray([...imageArray, {orig: image.src, filtered: url}]);
             }
             setSelectedDesign(null);
             setCurState({...curState, mode: 'edit'});
         }, 'image/png');
+        setSelectedDesign(null);
     }
 
     function handleCancel() {
@@ -212,6 +226,14 @@ function ImageFilter({curState, setCurState, imageArray, setImageArray, curProje
 
     function updateSetting(key, value) {
         setSettings((prev) => ({...prev, [key]: value}));
+    }
+
+    let loadMess = null;
+    if (isLoading) {
+        loadMess = 
+            <h2 id="load-message">
+                Loading... (This might take a while)
+            </h2>
     }
 
     return (
@@ -234,16 +256,6 @@ function ImageFilter({curState, setCurState, imageArray, setImageArray, curProje
                     checked={settings.inversion === 100}
                     onChange={(e) => updateSetting('inversion', e.target.checked ? 100 : 0)}
                 />
-                <label className="switch" htmlFor="image-type">
-                    For realistic pictures\n
-                    (otherwise for logo/cartoon w/ white background)
-                </label>
-                <input 
-                    type="checkbox"
-                    className="slider round"
-                    id="image-type"
-                    onChange={(e) => setImageType(e.target.checked ? 'picture' : 'logo')}
-                />
                 <button onClick={handleCancel}>
                     Cancel
                 </button>
@@ -252,6 +264,7 @@ function ImageFilter({curState, setCurState, imageArray, setImageArray, curProje
                 </button>
             </div>
             <div className="image-area">
+                {loadMess}
                 <canvas ref={canvasRef}></canvas>
             </div>
         </div>
