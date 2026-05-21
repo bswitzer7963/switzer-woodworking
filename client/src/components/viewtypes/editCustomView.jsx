@@ -4,6 +4,7 @@ import api from '../../api.js'
 
 export default function EditCustomView({curState, curUser, setCurState}) {
     const [imageArray, setImageArray] = useState([]);
+    const [selectedDesign, setSelectedDesign] = useState(null);
     const [curProject, setCurProject] = useState({
         projType: curState.spec || 'Board-Rect',
         title: '',
@@ -21,6 +22,8 @@ export default function EditCustomView({curState, curUser, setCurState}) {
                 setCurState={setCurState}
                 imageArray={imageArray}
                 setImageArray={setImageArray}
+                selectedDesign={selectedDesign}
+                setSelectedDesign={setSelectedDesign}
                 />
         case 'edit':
             return <EditCustom 
@@ -31,15 +34,15 @@ export default function EditCustomView({curState, curUser, setCurState}) {
                 setImageArray={setImageArray}
                 curProject={curProject}
                 setCurProject={setCurProject}
+                selectedDesign={selectedDesign}
+                setSelectedDesign={setSelectedDesign}
                 />
         default:
             throw new Error("Unrecognized spec in editCustomView");
     }
 }
 
-function EditCustom({curState, curUser, setCurState, imageArray, setImageArray, curProject, setCurProject}) {
-    const [selectedDesign, setSelectedDesign] = useState(null);
-
+function EditCustom({curState, curUser, setCurState, imageArray, setImageArray, curProject, setCurProject, selectedDesign, setSelectedDesign}) {
     function updateProject(key, value) {
         setCurProject(prev => ({...prev, [key]: value}))
     }
@@ -54,24 +57,32 @@ function EditCustom({curState, curUser, setCurState, imageArray, setImageArray, 
             ...curProject,
             images: imageArray,
             creatorID: curUser.userID
-        })
+        });
     }
 
     const imageList = imageArray.map((image, i) => (
-        <li key={i} className="dash-deco-opt" onClick={() => setSelectedDesign(i)} onDoubleClick={() => setCurState({...curState, mode: 'image'})}>
+        <li key={i} className="dash-deco-opt" onClick={() => setSelectedDesign(i)}>
+            <button id="edit-deco" onClick={(e) => {
+                setSelectedDesign(i);
+                setCurState({...curState, mode: 'image'});
+            }}>
+                WRENCH
+            </button>
             <img id="dash-deco-icon"
                 src={image}
                 alt={`Design #${i+1}`}
             />
-            <button id="delete-deco" onClick={(e) => handleDelete(e, i)}/>
+            <button id="delete-deco" onClick={(e) => handleDelete(e, i)}>
+                X
+            </button>
         </li>
     ));
-    
+
     return (
         <div id="edit-view">
             <DisplayModel projType={curProject.projType}/>
             <div id="edit-dash">
-                <button onClick={() => handleSaveProject()}>
+                <button onClick={() => handleSaveProject()} disabled={!curUser}>
                     Save
                 </button>
                 <select value={curProject.projType} onChange={(e) => updateProject('projType', e.target.value)}>
@@ -115,7 +126,6 @@ function EditCustom({curState, curUser, setCurState, imageArray, setImageArray, 
                     New Image
                 </button>
                 <ol id="submitted-images">
-                    Double Click To Edit
                     {imageList}
                 </ol>
             </div>
@@ -127,7 +137,7 @@ function EditCustom({curState, curUser, setCurState, imageArray, setImageArray, 
 //canvas goes as far as this watch. Didnt copy paste, but certainly a good amount of this is just watch and print lol
 //https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
 
-function ImageFilter({setCurState, imageArray, setImageArray, curProject}) {
+function ImageFilter({curState, setCurState, imageArray, setImageArray, curProject, selectedDesign, setSelectedDesign}) {
     const canvasRef = useRef(null);
     const fileRef = useRef(null);
     const [image, setImage] = useState(null);
@@ -138,6 +148,15 @@ function ImageFilter({setCurState, imageArray, setImageArray, curProject}) {
         contrast: 200,
         grayscale: 100
     });
+
+    //Preload if we have a selected (editing that selected image, else ask for one)
+    useEffect(() => {
+        if (selectedDesign === null) return;
+
+        const img = new Image();
+        img.onload = () => setImage(img);
+        img.src = imageArray[selectedDesign];
+    }, []);
 
     useEffect(() => {
         if (!image) return;
@@ -172,13 +191,23 @@ function ImageFilter({setCurState, imageArray, setImageArray, curProject}) {
         const canvas = canvasRef.current;
         canvas.toBlob((blob) => {
             const url = URL.createObjectURL(blob);
-            setImageArray([...imageArray, url]);
-            setCurState({curView: 'custom', spec: curProject, mode: 'edit'});
+
+            //Should probably switch to 1 indexing cuz this is ugly
+            if (selectedDesign !== null) {
+                let temp = [...imageArray];
+                temp[selectedDesign] = url;
+                setImageArray(temp);
+            }
+            else {
+                setImageArray([...imageArray, url]);
+            }
+            setSelectedDesign(null);
+            setCurState({...curState, mode: 'edit'});
         }, 'image/png');
     }
 
     function handleCancel() {
-        setCurState({curView: 'custom', spec: curProject, mode: 'edit'});
+        setCurState({...curState, mode: 'edit'});
     }
 
     function updateSetting(key, value) {

@@ -54,22 +54,22 @@ export default function MainView({curState, setCurState, curUser, setCurUser}) {
                 Start New Project
             </h1>
             <div id="new-proj-btn-section">
-                <button id="new-cuttingboard-btn" onClick={() => handleCustom('cuttingboard')}>
+                <button id="new-cuttingboard-btn" onClick={() => handleCustom('Board-Rect')}>
                     New Cutting Board
                 </button>
-                <button id="new-bat-btn" onClick={() => handleCustom('bat')}>
+                <button id="new-bat-btn" onClick={() => handleCustom('Bat')}>
                     New Bat
                 </button>
-                <button id="new-bowl-btn" onClick={() => handleCustom('bowl')}>
+                <button id="new-bowl-btn" onClick={() => handleCustom('Bowl')}>
                     New Bowl
                 </button>
-                <button id="new-sign-btn" onClick={() => handleCustom('sign')}>
+                <button id="new-sign-btn" onClick={() => handleCustom('Sign')}>
                     New Sign
                 </button>
-                <button id="new-emblem-btn" onClick={() => handleCustom('emblem')}>
+                <button id="new-emblem-btn" onClick={() => handleCustom('Emblem')}>
                     New Emblem
                 </button>
-                <button id="new-custom-btn" onClick={() => handleCustom('custom')}>
+                <button id="new-custom-btn" onClick={() => handleCustom('Custom')}>
                     New Custom Project
                 </button>
             </div>
