@@ -4,8 +4,9 @@ import {removeBackground} from '@imgly/background-removal';
 import api from '../../api.js'
 
 export default function EditCustomView({curState, curUser, setCurState}) {
-    const [imageArray, setImageArray] = useState([]);
+    const [imageArray, setImageArray] = useState([{orig: '/quag_cleaned.png', filtered: '/quag_cleaned.png'}]);
     const [selectedDesign, setSelectedDesign] = useState(null);
+    const [placedDesigns, setPlacedDesigns] = useState([]);
     const [curProject, setCurProject] = useState({
         projType: curState.spec || 'Board-Rect',
         title: '',
@@ -37,13 +38,15 @@ export default function EditCustomView({curState, curUser, setCurState}) {
                 setCurProject={setCurProject}
                 selectedDesign={selectedDesign}
                 setSelectedDesign={setSelectedDesign}
+                placedDesigns={placedDesigns}
+                setPlacedDesigns={setPlacedDesigns}
                 />
         default:
             throw new Error("Unrecognized spec in editCustomView");
     }
 }
 
-function EditCustom({curState, curUser, setCurState, imageArray, setImageArray, curProject, setCurProject, selectedDesign, setSelectedDesign}) {
+function EditCustom({curState, curUser, setCurState, imageArray, setImageArray, curProject, setCurProject, selectedDesign, setSelectedDesign, placedDesigns, setPlacedDesigns}) {
     function updateProject(key, value) {
         setCurProject(prev => ({...prev, [key]: value}))
     }
@@ -81,7 +84,13 @@ function EditCustom({curState, curUser, setCurState, imageArray, setImageArray, 
 
     return (
         <div id="edit-view">
-            <DisplayModel projType={curProject.projType}/>
+            <DisplayModel 
+                projType={curProject.projType}
+                selectedDesign={selectedDesign}
+                imageArray={imageArray}
+                placedDesigns={placedDesigns}
+                setPlacedDesigns={setPlacedDesigns}
+            />
             <div id="edit-dash">
                 <button onClick={() => handleSaveProject()} disabled={!curUser}>
                     Save
