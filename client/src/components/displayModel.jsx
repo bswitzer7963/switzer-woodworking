@@ -1,7 +1,7 @@
 //Source: https://sbcode.net/react-three-fiber/use-gltf/
 //Background Image: https://polyhaven.com/a/ticknock_02
 
-import {useState, useRef} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import {Canvas} from '@react-three/fiber';
 import {OrbitControls, Environment, useGLTF, ContactShadows, useTexture} from '@react-three/drei';
 
@@ -10,13 +10,31 @@ import {Bowl} from '../../public/modelComponent/Bowl.jsx';
 
 //remove projtype when able to send real project obj
 export default function DisplayModel({projType, selectedDesign, imageArray, placedDesigns, setPlacedDesigns}) {
+    const curModelDefaults = {
+        'Bowl': {
+            defaultAngle: Math.PI / 4,
+            defaultY: 0.75,
+            defaultScale: [1, 1, 1],
+            defaultRot: [0, 0, 0]
+
+        },
+        'Board-Rect': {
+            defaultAngle: 0,
+            defaultY: 0,
+            defaultScale: [0.5, 0.5, 0.5],
+            defaultRot: [Math.PI / 2, 0, 0]
+        }
+    };
+
     const [isSpinning, setIsSpinning] = useState(true);
     const [isDecorating, setIsDecorating] = useState(false);
-    const defaultAngle = Math.PI / 4;
+    //Tuned for bowl to show first, ironically my first working model
+    let defaultAngle = Math.PI / 4;
     const [dAngle, setDAngle] = useState(defaultAngle);
     const [dPos, setDPos] = useState([Math.cos(defaultAngle), 0.75, Math.sin(defaultAngle)]);
     //Kinda ugly, but i have too many vars as is
     const [dRot, setDRot] = useState([0, Math.atan2(Math.cos(defaultAngle), Math.sin(defaultAngle)), 0]);
+    //Might have to change depending on model v
     const [dScale, setDScale] = useState([1, 1, 1]);
     const timer = useRef(null);
 
@@ -27,44 +45,86 @@ export default function DisplayModel({projType, selectedDesign, imageArray, plac
         'Bowl': Bowl
     };
 
-    const CurModel = modelOpts[projType] || Board_Rect;
+    const CurModel = modelOpts[projType] || Bowl;
+
+    useEffect(() => {
+        const cur = curModelDefaults[projType] || curModelDefaults['Bowl'];
+        setDAngle(cur.defaultAngle);
+        setDPos([Math.cos(defaultAngle), cur.defaultY, Math.sin(defaultAngle)]);
+        setDScale(cur.defaultScale);
+        setDRot(cur.defaultRot);
+    }, []);
 
     //const curModel = modelOpts.find((type) => type.title === projType) || modelOpts[0];
     function move(dir) {
-/*         setDPos(prev => {
-            const [x, y, z] = prev;
-            switch(dir) {
-                case 'left':
-                    return [x - 0.2, y, z];
-                case 'right':
-                    return [x + 0.2, y, z];
-                case 'up':
-                    return [x, y + 0.2, z];
-                case 'down':
-                    return [x, y - 0.2, z];
-                default:
-                    throw new Error("Unrecognized Control in displayModel")
-            }
-        }) */
-        if (dir == 'up' || dir === 'down') {
+        if (projType.startsWith('Board')) {
             setDPos(prev => {
                 const [x, y, z] = prev;
-                const change = dir === 'up' ? 0.1 : -0.1;
-                return [x, y + change, z];
+                switch(dir) {
+                    case 'up':
+                        return [x, y, z + 0.1];
+                    case 'down': 
+                        return [x, y, z - 0.1];
+                    case 'left': 
+                        return [x - 0.1, y, z];
+                    case 'right': 
+                        return [x + 0.1, y, z];
+                    default:
+                        throw new Error("Unrecognized direction in diaplyModel (board)");
+                }
             });
         }
-        else if (dir == 'left' || dir === 'right') {
-            setDAngle(prev => {
-                const change = dir === 'right' ? -0.1 : 0.1;
-                const postChange = prev + change;
-                const x = Math.cos(postChange);
-                const z = Math.sin(postChange);
-                const rot = Math.atan2(x, z);
-                setDRot(() => [0, rot, 0]);
-                setDPos((pos) => [x, pos[1], z]);
-                return postChange;
-            });
+        else {
+            if (dir == 'up' || dir === 'down') {
+                setDPos(prev => {
+                    const [x, y, z] = prev;
+                    const change = dir === 'up' ? 0.1 : -0.1;
+                    return [x, y + change, z];
+                });
+            }
+            else if (dir == 'left' || dir === 'right') {
+                setDAngle(prev => {
+                    const change = dir === 'right' ? -0.1 : 0.1;
+                    const postChange = prev + change;
+                    const x = Math.cos(postChange);
+                    const z = Math.sin(postChange);
+                    const rot = Math.atan2(x, z);
+                    setDRot(() => [0, rot, 0]);
+                    setDPos((pos) => [x, pos[1], z]);
+                    return postChange;
+                });
+            }
         }
+    }
+
+    function scale(dir) {
+        setDScale(prev => {
+            const [x, y, z] = prev;
+            if (dir === 'up') {
+                return [x + 0.1, y + 0.1, z];
+            }
+            else if (dir ==='down') {
+                return [x - 0.1, y - 0.1, z];
+            }
+            else {
+                throw new Error("Unrecognized scale dir in displayModel");
+            }
+        });
+    }
+
+    function rotate(dir) {
+        setDRot(prev => {
+            const [x, y, z] = prev;
+            if (dir === 'right') {
+                return [x, y, z + 0.1];
+            }
+            else if (dir ==='left') {
+                return [x, y, z - 0.1];
+            }
+            else {
+                throw new Error("Unrecognized rot dir in displayModel");
+            }
+        });
     }
 
     function handleClick() {
@@ -138,13 +198,30 @@ export default function DisplayModel({projType, selectedDesign, imageArray, plac
                         <button id="move-left" onClick={() => move('left')}>
                             L
                         </button>
-                        <button id="move-left" onClick={() => move('up')}>
+                        <button id="move-up" onClick={() => move('up')}>
                             Up
                         </button>
-                        <button id="move-left" onClick={() => move('down')}>
+                        <button id="move-down" onClick={() => move('down')}>
                             Down
                         </button>
-                        <button id="move-left" onClick={() => move('right')}>
+                        <button id="move-right" onClick={() => move('right')}>
+                            R
+                        </button>
+                    </div>
+                    <div id="scale-ctrls">
+
+                        <button id="scale-up" onClick={() => scale('up')}>
+                            Up
+                        </button>
+                        <button id="scale-down" onClick={() => scale('down')}>
+                            Down
+                        </button>
+                    </div>
+                    <div id="rot-ctrls">
+                        <button id="rot-left" onClick={() => rotate('left')}>
+                            L
+                        </button>
+                        <button id="rot-right" onClick={() => rotate('right')}>
                             R
                         </button>
                     </div>

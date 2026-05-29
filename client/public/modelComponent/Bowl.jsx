@@ -6,10 +6,10 @@ import React from 'react'
 import { useGLTF, Decal, useTexture } from '@react-three/drei'
 
 export function Bowl({dUrl, dPos, dRot, dScale}) {
-  const {nodes, materials} = useGLTF('/bowl_end.glb')
-  const texture = useTexture(dUrl || '/Quagsire.webp')
+  const {nodes, materials} = useGLTF('/bowl_end.glb');
+  const texture = useTexture(dUrl || '/Quagsire.webp');
 
-  let decal = null
+  let decal = null;
   if (dUrl) {
     decal = (
       <Decal

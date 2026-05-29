@@ -65,15 +65,27 @@ app.get('/forsale', async (req, res) => {
         res.status(500).json({error: "Failed to GET /forsale"});
     }
 });
-//will make once i have an idea of my system
-/* app.post('/orders', async (req, res) => {
-    try {
 
+//app.update for state changes etc
+app.post('/orders', async (req, res) => {
+    try {
+        
+        const newProject = await prisma.user.create({
+            data: {
+                fName: first,
+                lName: last,
+                email: uEmail,
+                pwHash: pass,
+                phNumber: userNumber,
+                accType: 'Customer'
+            }
+        });
     }
     catch (err) {
-
+        console.error("POSTS /orders error", err);
+        res.status(500).json({error: "Failed to POST /orders"});
     }
-}); */
+});
 
 app.post('/login', async (req, res) =>  {
     try {
