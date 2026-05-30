@@ -69,17 +69,28 @@ app.get('/forsale', async (req, res) => {
 //app.update for state changes etc
 app.post('/orders', async (req, res) => {
     try {
-        
-        const newProject = await prisma.user.create({
+        const title = req.body.projTitle;
+        const type = req.body.projType;
+        const desc = req.body.description;
+        const size = req.body.size;
+        const imgList = req.body.imgList;
+        const imgPosList = req.body.imgPos;
+        const snap = req.body.snapshot;
+
+        const newProject = await prisma.project.create({
             data: {
-                fName: first,
-                lName: last,
-                email: uEmail,
-                pwHash: pass,
-                phNumber: userNumber,
-                accType: 'Customer'
+                projTitle: title,
+                projType: type,
+                description: desc,
+                size: size,
+                image: imgList,
+                imagePos: imgPosList,
+                snapshot: snap,
             }
         });
+
+        res.json(newProject);
+
     }
     catch (err) {
         console.error("POSTS /orders error", err);

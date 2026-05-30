@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "projType" AS ENUM ('Bowl', 'Bat', 'CuttingBoard', 'Sign', 'Emblem', 'Custom');
+CREATE TYPE "projType" AS ENUM ('Bowl', 'Bat', 'CuttingBoardRect', 'CuttingBoardSquare', 'Sign', 'Emblem', 'Custom');
 
 -- CreateEnum
 CREATE TYPE "accType" AS ENUM ('Emmet', 'Customer', 'Admin');
@@ -8,7 +8,7 @@ CREATE TYPE "accType" AS ENUM ('Emmet', 'Customer', 'Admin');
 CREATE TYPE "sizeType" AS ENUM ('Small', 'Medium', 'Large', 'Custom');
 
 -- CreateEnum
-CREATE TYPE "projStatus" AS ENUM ('Pending', 'Accepted', 'StartedBuilding', 'ReadyToDeliver');
+CREATE TYPE "projStatus" AS ENUM ('userSaved', 'Pending', 'Accepted', 'StartedBuilding', 'ReadyToDeliver');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -21,20 +21,6 @@ CREATE TABLE "User" (
     "accType" "accType" NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("userID")
-);
-
--- CreateTable
-CREATE TABLE "SubmittedRequest" (
-    "reqID" TEXT NOT NULL,
-    "creatorID" TEXT NOT NULL,
-    "projectType" "projType" NOT NULL,
-    "descriptionSpec" TEXT NOT NULL,
-    "size" "sizeType",
-    "status" "projStatus" NOT NULL DEFAULT 'Pending',
-    "customImage" TEXT[],
-    "whenSubmitted" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "SubmittedRequest_pkey" PRIMARY KEY ("reqID")
 );
 
 -- CreateTable
@@ -52,24 +38,24 @@ CREATE TABLE "ExistingForSale" (
 );
 
 -- CreateTable
-CREATE TABLE "SavedProject" (
-    "savedID" TEXT NOT NULL,
+CREATE TABLE "Project" (
+    "projID" TEXT NOT NULL,
     "creatorID" TEXT NOT NULL,
     "projTitle" TEXT NOT NULL,
-    "projectType" "projType" NOT NULL,
+    "projType" "projType" NOT NULL,
     "description" TEXT NOT NULL,
     "size" "sizeType",
+    "status" "projStatus" NOT NULL DEFAULT 'userSaved',
     "image" TEXT[],
+    "imagePos" JSONB,
+    "snapshot" TEXT NOT NULL,
     "whenStarted" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "SavedProject_pkey" PRIMARY KEY ("savedID")
+    CONSTRAINT "Project_pkey" PRIMARY KEY ("projID")
 );
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- AddForeignKey
-ALTER TABLE "SubmittedRequest" ADD CONSTRAINT "SubmittedRequest_creatorID_fkey" FOREIGN KEY ("creatorID") REFERENCES "User"("userID") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "SavedProject" ADD CONSTRAINT "SavedProject_creatorID_fkey" FOREIGN KEY ("creatorID") REFERENCES "User"("userID") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Project" ADD CONSTRAINT "Project_creatorID_fkey" FOREIGN KEY ("creatorID") REFERENCES "User"("userID") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -81,9 +81,9 @@ model Project {
   status projStatus @default(userSaved)
 
   image String[]
-  imagePos Json? //Stores image location
+  imagePos Json[] //Stores image location
 
-  snapshot String //Would be simply a snapshot of the current build for little thumbnail
+  snapshot String? //Would be simply a snapshot of the current build for little thumbnail
 
   whenStarted DateTime @default(now())
 }
