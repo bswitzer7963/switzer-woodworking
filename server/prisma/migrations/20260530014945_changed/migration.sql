@@ -47,8 +47,8 @@ CREATE TABLE "Project" (
     "size" "sizeType",
     "status" "projStatus" NOT NULL DEFAULT 'userSaved',
     "image" TEXT[],
-    "imagePos" JSONB,
-    "snapshot" TEXT NOT NULL,
+    "imagePos" JSONB[],
+    "snapshot" TEXT,
     "whenStarted" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Project_pkey" PRIMARY KEY ("projID")

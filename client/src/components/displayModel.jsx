@@ -5,11 +5,14 @@ import {useState, useEffect, useRef} from 'react';
 import {Canvas} from '@react-three/fiber';
 import {OrbitControls, Environment, useGLTF, ContactShadows, useTexture} from '@react-three/drei';
 
+import {ModelComponent} from './modelComponent.jsx';
 import {Board_Rect} from '../../public/modelComponent/Board_Rect.jsx';
 import {Bowl} from '../../public/modelComponent/Bowl.jsx';
 
 //remove projtype when able to send real project obj
-export default function DisplayModel({projType, selectedDesign, imageArray, placedDesigns, setPlacedDesigns}) {
+export default function DisplayModel({projType, selectedDesign, imageArray, imageInfoArray, setImageInfoArray,
+    dAngle, setDAngle, dPos, setDPos, dRot, setDRot, dScale, setDScale
+}) {
     const curModelDefaults = {
         'Bowl': {
             defaultAngle: Math.PI / 4,
@@ -18,7 +21,7 @@ export default function DisplayModel({projType, selectedDesign, imageArray, plac
             defaultRot: [0, 0, 0]
 
         },
-        'Board-Rect': {
+        'CuttingBoardRect': {
             defaultAngle: 0,
             defaultY: 0,
             defaultScale: [0.5, 0.5, 0.5],
@@ -28,36 +31,31 @@ export default function DisplayModel({projType, selectedDesign, imageArray, plac
 
     const [isSpinning, setIsSpinning] = useState(true);
     const [isDecorating, setIsDecorating] = useState(false);
-    //Tuned for bowl to show first, ironically my first working model
-    let defaultAngle = Math.PI / 4;
-    const [dAngle, setDAngle] = useState(defaultAngle);
-    const [dPos, setDPos] = useState([Math.cos(defaultAngle), 0.75, Math.sin(defaultAngle)]);
-    //Kinda ugly, but i have too many vars as is
-    const [dRot, setDRot] = useState([0, Math.atan2(Math.cos(defaultAngle), Math.sin(defaultAngle)), 0]);
-    //Might have to change depending on model v
-    const [dScale, setDScale] = useState([1, 1, 1]);
+    //Moved the decal info up to editcustomview, passed as prop to here
     const timer = useRef(null);
 
-
     const modelOpts = {
-        'Board-Rect': Board_Rect,
-    /*     'Bat': Bat,*/
+        'CuttingBoardRect': Board_Rect,
         'Bowl': Bowl
     };
+
+/*     const modelOpts = {
+        'CuttingBoardRect': '/board_rect_end.glb',
+        'Bowl': '/bowl_end.glb'
+    }; */
 
     const CurModel = modelOpts[projType] || Bowl;
 
     useEffect(() => {
         const cur = curModelDefaults[projType] || curModelDefaults['Bowl'];
         setDAngle(cur.defaultAngle);
-        setDPos([Math.cos(defaultAngle), cur.defaultY, Math.sin(defaultAngle)]);
+        setDPos([Math.cos(cur.defaultAngle), cur.defaultY, Math.sin(cur.defaultAngle)]);
         setDScale(cur.defaultScale);
         setDRot(cur.defaultRot);
     }, []);
 
-    //const curModel = modelOpts.find((type) => type.title === projType) || modelOpts[0];
     function move(dir) {
-        if (projType.startsWith('Board')) {
+        if (projType.startsWith('Cutting')) {
             setDPos(prev => {
                 const [x, y, z] = prev;
                 switch(dir) {
@@ -152,24 +150,45 @@ export default function DisplayModel({projType, selectedDesign, imageArray, plac
     }
 
     function handleReturnToOrigin() {
-        console.log('Send back to center')
+        const cur = curModelDefaults[projType] || curModelDefaults['Bowl'];
+        setDAngle(cur.defaultAngle);
+        setDPos([Math.cos(cur.defaultAngle), cur.defaultY, Math.sin(cur.defaultAngle)]);
+        setDScale(cur.defaultScale);
+        setDRot(cur.defaultRot);
     }
 
     function handleClearAll() {
-        console.log('Restart changes')
+        //LOOKAT, gotta be something deeper here to consider lol
+        setImageInfoArray([]);
     }
 
     function handleExitView() {
         console.log('Exit Fullscreen')
     }
 
+    //Add a design selector, can move between placed designs, not sure if i want to allow multiple of the same design
+    function handlePlaceDesign() {
+        setImageInfoArray(prev => {
+            const arr = [...prev];
+            arr[selectedDesign] = {
+                design: imageArray[selectedDesign],
+                angle: dAngle,
+                pos: dPos,
+                rot: dRot,
+                scale: dScale
+            };
+            return arr;
+        });
+    }
+
+
     let curDesignUrl = null;
 
     if (selectedDesign !== null) {
-        curDesignUrl = imageArray[selectedDesign]?.filtered
-        console.log('selectedDesign:', selectedDesign)
-        console.log('curDesignUrl:', curDesignUrl)
+        curDesignUrl = imageArray[selectedDesign]?.filtered;
     }
+
+    const modelUrl = modelOpts[projType] || modelOpts['Bowl'];
 
     return (
         <div id="cavas-w-dash">
@@ -179,6 +198,10 @@ export default function DisplayModel({projType, selectedDesign, imageArray, plac
                     <Environment preset="forest" background/>
                     <fog attach="fog" args={['black', 15, 20]} />
                     <CurModel
+                        mUrl={modelUrl}
+                        imageArray={imageArray}
+                        imageInfoArray={imageInfoArray}
+                        selectedDesign={selectedDesign}
                         dUrl={curDesignUrl}
                         dPos={dPos}
                         dRot={dRot}
@@ -209,7 +232,6 @@ export default function DisplayModel({projType, selectedDesign, imageArray, plac
                         </button>
                     </div>
                     <div id="scale-ctrls">
-
                         <button id="scale-up" onClick={() => scale('up')}>
                             Up
                         </button>
@@ -225,6 +247,9 @@ export default function DisplayModel({projType, selectedDesign, imageArray, plac
                             R
                         </button>
                     </div>
+                    <button id="place-design-btn" onClick={() => handlePlaceDesign()}>
+                        Place Design
+                    </button>
                     <button id="toggle-dec-btn" onClick={() => toggleMode()}>
                         Toggle to: {isDecorating ? "View Mode" : "Decorate Mode"}
                     </button>
@@ -237,6 +262,7 @@ export default function DisplayModel({projType, selectedDesign, imageArray, plac
                     <button id="exit-model-view-btn" onClick={() => handleExitView()}>
                         Exit Model View
                     </button>
+
                 </div>
             </div>
 

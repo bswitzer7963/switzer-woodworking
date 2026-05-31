@@ -1,21 +1,32 @@
+//I am aware this is insanely ugly at the moment, I will go back and simplify what i can visually, lint check etc
 import {useState, useEffect, useRef} from 'react';
 import DisplayModel from '../displayModel.jsx';
 import {removeBackground} from '@imgly/background-removal';
+import html2canvas from 'html2canvas';
 import api from '../../api.js'
 
 export default function EditCustomView({curState, curUser, setCurState}) {
     const [imageArray, setImageArray] = useState([{orig: '/quag_cleaned.png', filtered: '/quag_cleaned.png'}]);
+    const [imageInfoArray, setImageInfoArray] = useState([]);
     const [selectedDesign, setSelectedDesign] = useState(null);
-    const [placedDesigns, setPlacedDesigns] = useState([]);
     const [curProject, setCurProject] = useState({
-        projType: curState.spec || 'Board-Rect',
+        projType: curState.spec || 'CuttingBoardRect',
         title: '',
         description: '',
-        size: '',
-        images: [],
-        designPos: [],
-        status: 'Draft'
+        size: 'Custom',
+        imgList: [],
+        imgInfo: {}
     });
+
+    //Tuned for bowl to show first, ironically my first working model
+    let defaultAngle = Math.PI / 4;
+    const [dAngle, setDAngle] = useState(defaultAngle);
+    const [dPos, setDPos] = useState([Math.cos(defaultAngle), 0.75, Math.sin(defaultAngle)]);
+    //Kinda ugly, but i have too many vars as is
+    const [dRot, setDRot] = useState([0, Math.atan2(Math.cos(defaultAngle), Math.sin(defaultAngle)), 0]);
+    //Might have to change depending on model v
+    const [dScale, setDScale] = useState([1, 1, 1]);
+    
 
     switch(curState.mode) {
         case 'image':
@@ -38,31 +49,66 @@ export default function EditCustomView({curState, curUser, setCurState}) {
                 setCurProject={setCurProject}
                 selectedDesign={selectedDesign}
                 setSelectedDesign={setSelectedDesign}
-                placedDesigns={placedDesigns}
-                setPlacedDesigns={setPlacedDesigns}
+                dAngle={dAngle}
+                setDAngle={setDAngle}
+                dPos={dPos}
+                setDPos={setDPos}
+                dRot={dRot}
+                setDRot={setDRot}
+                dScale={dScale}
+                setDScale={setDScale}
+                imageInfoArray={imageInfoArray}
+                setImageInfoArray={setImageInfoArray}
                 />
         default:
             throw new Error("Unrecognized spec in editCustomView");
     }
 }
 
-function EditCustom({curState, curUser, setCurState, imageArray, setImageArray, curProject, setCurProject, selectedDesign, setSelectedDesign, placedDesigns, setPlacedDesigns}) {
+function EditCustom({
+    curState, curUser, setCurState, imageArray, setImageArray, curProject, setCurProject, selectedDesign, setSelectedDesign, setImageInfoArray, imageInfoArray,
+    dAngle, setDAngle, dPos, setDPos, dRot, setDRot, dScale, setDScale
+}) {
     function updateProject(key, value) {
         setCurProject(prev => ({...prev, [key]: value}))
     }
 
     function handleDelete(e, imgOfIminentDoomInd) {
         e.stopPropagation();
-        setImageArray(imageArray.filter((images, i) => i !== imgOfIminentDoomInd));
+        setImageArray(imageArray.filter((image, i) => i !== imgOfIminentDoomInd));
+    }
+
+    //DC to: https://stackoverflow.com/questions/18650168/convert-blob-to-base64
+    function blobToBase64(blob) {
+        return new Promise((resolve, _) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(blob);
+        });
     }
 
     async function handleSaveProject() {
-        await api.post('/projects', {
+        const canvas = document.getElementById("three-canvas-space");
+        const snapshot = await html2canvas(canvas);
+        const ssUrl = snapshot.toDataURL('image/png');
+
+        const saveable = []
+
+        for (const img of imageArray) {
+            const orig = img.orig.startsWith('blob:') ? await blobToBase64(img.orig) : img.orig;
+            const filtered = img.filtered.startsWith('blob:') ? await blobToBase64(img.filtered) : img.filtered;
+            saveable.push({orig, filtered});
+        }
+
+        await api.post(`/users/${curUser.userID}/projects`, {
             ...curProject,
-            images: imageArray,
-            creatorID: curUser.userID
+            imgList: saveable,
+            imgInfo: imageInfoArray,
+            creatorID: curUser.userID,
+            snapshot: ssUrl
         });
     }
+
 
     const imageList = imageArray.map((image, i) => (
         <li key={i} className="dash-deco-opt" onClick={() => setSelectedDesign(i)}>
@@ -88,15 +134,23 @@ function EditCustom({curState, curUser, setCurState, imageArray, setImageArray, 
                 projType={curProject.projType}
                 selectedDesign={selectedDesign}
                 imageArray={imageArray}
-                placedDesigns={placedDesigns}
-                setPlacedDesigns={setPlacedDesigns}
+                dAngle={dAngle}
+                setDAngle={setDAngle}
+                dPos={dPos}
+                setDPos={setDPos}
+                dRot={dRot}
+                setDRot={setDRot}
+                dScale={dScale}
+                setDScale={setDScale}
+                imageInfoArray={imageInfoArray}
+                setImageInfoArray={setImageInfoArray}
             />
             <div id="edit-dash">
                 <button onClick={() => handleSaveProject()} disabled={!curUser}>
                     Save
                 </button>
                 <select value={curProject.projType} onChange={(e) => updateProject('projType', e.target.value)}>
-                    <option value='Board-Rect'>
+                    <option value='CuttingBoardRect'>
                         Rectangle CuttingBoard
                     </option>
                     <option value='Board-Square'>
@@ -132,6 +186,20 @@ function EditCustom({curState, curUser, setCurState, imageArray, setImageArray, 
                     maxLength="500"
                     onChange={(e) => updateProject('description', e.target.value)}
                 />
+                <select value={curProject.size} onChange={(e) => updateProject('size', e.target.value)}>
+                    <option value='Small'>
+                        Small
+                    </option>
+                    <option value='Medium'>
+                        Medium
+                    </option>
+                    <option value='Large'>
+                        Large
+                    </option>
+                    <option value='Custom'>
+                        Custom EXPLAIN IN DESC
+                    </option>
+                </select>
                 <button id="new-image" disabled={imageArray.length > 2} onClick={() => {
                     setCurState({...curState, mode: 'image'});
                     setSelectedDesign(null);
@@ -154,7 +222,6 @@ function ImageFilter({curState, setCurState, imageArray, setImageArray, curProje
     const canvasRef = useRef(null);
     const fileRef = useRef(null);
     const [image, setImage] = useState(null);
-    const [imageType, setImageType] = useState('logo');
     const [isLoading, setIsLoading] = useState(false);
     const [settings, setSettings] = useState({
         saturation: 200,

@@ -62,7 +62,7 @@ model ExistingForSale {
   size sizeType?
   price String
 
-  image String[] //Would just store urls for submitted images
+  image Json[] //Would just store urls for submitted images
 
   whenMade DateTime @default(now())
 }
@@ -80,7 +80,7 @@ model Project {
 
   status projStatus @default(userSaved)
 
-  image String[]
+  image Json[]
   imagePos Json[] //Stores image location
 
   snapshot String? //Would be simply a snapshot of the current build for little thumbnail

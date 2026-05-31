@@ -54,7 +54,7 @@ export default function MainView({curState, setCurState, curUser, setCurUser}) {
                 Start New Project
             </h1>
             <div id="new-proj-btn-section">
-                <button id="new-cuttingboard-btn" onClick={() => handleCustom('Board-Rect')}>
+                <button id="new-cuttingboard-btn" onClick={() => handleCustom('CuttingBoardRect')}>
                     New Cutting Board
                 </button>
                 <button id="new-bat-btn" onClick={() => handleCustom('Bat')}>

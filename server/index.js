@@ -29,11 +29,9 @@ app.get('/users', async (req, res) => {
 
 app.get('/users/:id/saved', async (req, res) => {
     try {
-        const user = await prisma.user.findUnique({where: {userID: req.params.id}});
-        if (!user) return res.status(404).json({error: "Failed to find user"});
+        const projects = await prisma.project.findUnique({where: {creatorID: req.params.id}});
 
-        let saved = user.savedProjects
-        res.json(saved);
+        res.json(projects);
     }
     catch (err) {
         console.error("GET /users/:id/saved Error", err);
@@ -41,9 +39,11 @@ app.get('/users/:id/saved', async (req, res) => {
     }
 });
 
+//For emmets dash
 app.get('/orders', async (req, res) => {
     try {
-        const orders = await prisma.submittedRequest.findMany();
+        const emmetEnd = ['Accepted', 'StartedBuilding', 'ReadyToDeliver'];
+        const orders = await prisma.project.findMany({where: {projStatus: { in: emmetEnd}}});
 
         res.json(orders);
     }
@@ -52,7 +52,6 @@ app.get('/orders', async (req, res) => {
         res.status(500).json({error: "Failed to GET /orders"});
     }
 });
-
 
 app.get('/forsale', async (req, res) => {
     try {
@@ -66,16 +65,17 @@ app.get('/forsale', async (req, res) => {
     }
 });
 
-//app.update for state changes etc
-app.post('/orders', async (req, res) => {
+//for saving new proj
+app.post('/users/:id/projects', async (req, res) => {
     try {
-        const title = req.body.projTitle;
+        const title = req.body.title;
         const type = req.body.projType;
         const desc = req.body.description;
         const size = req.body.size;
         const imgList = req.body.imgList;
-        const imgPosList = req.body.imgPos;
+        const imgPosList = req.body.imgInfo;
         const snap = req.body.snapshot;
+        const projStatus = 'Draft';
 
         const newProject = await prisma.project.create({
             data: {
@@ -86,15 +86,16 @@ app.post('/orders', async (req, res) => {
                 image: imgList,
                 imagePos: imgPosList,
                 snapshot: snap,
+                creatorID: req.params.id,
+                status: projStatus
             }
         });
 
         res.json(newProject);
-
     }
     catch (err) {
-        console.error("POSTS /orders error", err);
-        res.status(500).json({error: "Failed to POST /orders"});
+        console.error("POSTS /users/:id/projects error", err);
+        res.status(500).json({error: "Failed to POST /users/:id/projects"});
     }
 });
 
