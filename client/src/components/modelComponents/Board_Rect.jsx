@@ -4,8 +4,10 @@ Command: npx gltfjsx@6.5.3 public/board_rect_end.glb -o public/modelComponent/Bo
 */
 
 import React from 'react'
-import { useGLTF, Decal, useTexture } from '@react-three/drei'
-  
+import { useGLTF } from '@react-three/drei'
+
+import Design from '../design.jsx';
+/*   
 function Design({url, pos, rot, scale, opac}) {
     const texture = useTexture(url || '/Quagsire.webp');
     return (
@@ -24,7 +26,7 @@ function Design({url, pos, rot, scale, opac}) {
           />
         </Decal>
       )
-}
+} */
 
 export function Board_Rect({dUrl, dPos, dRot, dScale, imageArray, imageInfoArray, selectedDesign}) {
   const { nodes, materials } = useGLTF('/board_rect_end.glb');

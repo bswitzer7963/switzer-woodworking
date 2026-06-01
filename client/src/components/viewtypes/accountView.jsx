@@ -5,7 +5,7 @@ export default function AccountView({curUser, setCurState}) {
     const [curSaved, setCurSaved] = useState([]);
 
     useEffect(() => {
-        api.get(`/user/${curUser.userID}/saved`)
+        api.get(`/users/${curUser.userID}/projects`)
             .then(res => {
                 setCurSaved(res.data)
             })
@@ -32,10 +32,10 @@ export default function AccountView({curUser, setCurState}) {
     }
     else {
         listedSaved = curSaved.map((project) => (
-            <li key={project.savedID} onClick={() => handleClickSaved(project)}>
+            <li key={project.projID} onClick={() => handleClickSaved(project)}>
                 <div className="project-header">
                     <h1>
-                        {project.title}
+                        {project.projTitle}
                     </h1>
                     <img src={project.snapshot} alt="Snapshot not found" className="saved-snapshot" />
                 </div>

@@ -5,9 +5,10 @@ import {useState, useEffect, useRef} from 'react';
 import {Canvas} from '@react-three/fiber';
 import {OrbitControls, Environment, useGLTF, ContactShadows, useTexture} from '@react-three/drei';
 
-import {ModelComponent} from './modelComponent.jsx';
-import {Board_Rect} from '../../public/modelComponent/Board_Rect.jsx';
-import {Bowl} from '../../public/modelComponent/Bowl.jsx';
+
+//import {ModelComponent} from './modelComponent.jsx'; deprecated
+import {Board_Rect} from './modelComponents/Board_Rect.jsx';
+import {Bowl} from './modelComponents/Bowl.jsx';
 
 //remove projtype when able to send real project obj
 export default function DisplayModel({projType, selectedDesign, imageArray, imageInfoArray, setImageInfoArray,

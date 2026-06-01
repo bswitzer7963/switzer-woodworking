@@ -6,16 +6,20 @@ import html2canvas from 'html2canvas';
 import api from '../../api.js'
 
 export default function EditCustomView({curState, curUser, setCurState}) {
-    const [imageArray, setImageArray] = useState([{orig: '/quag_cleaned.png', filtered: '/quag_cleaned.png'}]);
-    const [imageInfoArray, setImageInfoArray] = useState([]);
+    let loadingSaved = null;
+    if (curState.spec && typeof curState.spec !== 'string') {
+        loadingSaved = true;
+    }
+    const [imageArray, setImageArray] = useState(loadingSaved ? curState.spec.image : [{orig: '/quag_cleaned.png', filtered: '/quag_cleaned.png'}]);
+    const [imageInfoArray, setImageInfoArray] = useState(loadingSaved ? curState.spec.imagePos : []);
     const [selectedDesign, setSelectedDesign] = useState(null);
     const [curProject, setCurProject] = useState({
-        projType: curState.spec || 'CuttingBoardRect',
-        title: '',
-        description: '',
-        size: 'Custom',
-        imgList: [],
-        imgInfo: {}
+        projType: loadingSaved ? curState.spec.projType : curState.spec || 'CuttingBoardRect',
+        title: loadingSaved ? curState.spec.projTitle : '',
+        description: loadingSaved ? curState.spec.description : '',
+        size: loadingSaved ? curState.spec.size : 'Custom',
+        imgList: loadingSaved ? curState.spec.image : [],
+        imgInfo: loadingSaved ? curState.spec.imagePos : []
     });
 
     //Tuned for bowl to show first, ironically my first working model
@@ -110,10 +114,8 @@ function EditCustom({
         });
     }
 
-
     const imageList = imageArray.map((image, i) => (
         <li key={i} className="dash-deco-opt" onClick={() => {
-
             setSelectedDesign(i);
         }}>
             <button id="edit-deco" onClick={(e) => {
@@ -233,6 +235,7 @@ function ImageFilter({curState, setCurState, imageArray, setImageArray, curProje
         contrast: 200,
         grayscale: 100
     });
+    const [removeBG, setRemoveBG] = useState(true);
 
     //Preload if we have a selected (editing that selected image, else ask for one)
     useEffect(() => {
@@ -268,16 +271,25 @@ function ImageFilter({curState, setCurState, imageArray, setImageArray, curProje
         if (!imgFile) return;
 
         setIsLoading(true);
-        //Remove background with imgly, had to use small model cuz it took digustingly long with med
-        const imgWOBG = await removeBackground(imgFile[0], {model: 'small'});
-        const urlWOBG = URL.createObjectURL(imgWOBG);
+
+        let url;
+
+        if (removeBG) {
+            //Remove background with imgly, had to use small model cuz it took digustingly long with med
+            const imgWOBG = await removeBackground(imgFile[0], {model: 'small'});
+            url = URL.createObjectURL(imgWOBG);
+        }
+        else {
+            url = URL.createObjectURL(imgFile[0]);
+        }
 
         const img = new Image();
         img.onload = () => {
             setImage(img);
             setIsLoading(false);
         };
-        img.src = urlWOBG;
+
+        img.src = url;
     }
 
 /*     async function handleSave() {
@@ -356,6 +368,16 @@ function ImageFilter({curState, setCurState, imageArray, setImageArray, curProje
                     id="inversion"
                     checked={settings.inversion === 100}
                     onChange={(e) => updateSetting('inversion', e.target.checked ? 100 : 0)}
+                />
+                <label className="switch" htmlFor="remove-bg">
+                    Remove Background
+                </label>
+                <input 
+                    type="checkbox"
+                    className="slider round"
+                    id="remove-bg"
+                    checked={removeBG}
+                    onChange={(e) => setRemoveBG(!removeBG)}
                 />
                 <button onClick={handleCancel}>
                     Cancel

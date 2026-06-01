@@ -29,9 +29,9 @@ app.get('/users', async (req, res) => {
     }
 });
 
-app.get('/users/:id/saved', async (req, res) => {
+app.get('/users/:id/projects', async (req, res) => {
     try {
-        const projects = await prisma.project.findUnique({where: {creatorID: req.params.id}});
+        const projects = await prisma.project.findMany({where: {creatorID: req.params.id}});
 
         res.json(projects);
     }
@@ -45,7 +45,7 @@ app.get('/users/:id/saved', async (req, res) => {
 app.get('/orders', async (req, res) => {
     try {
         const emmetEnd = ['Accepted', 'StartedBuilding', 'ReadyToDeliver'];
-        const orders = await prisma.project.findMany({where: {projStatus: { in: emmetEnd}}});
+        const orders = await prisma.project.findMany({where: {status: {in: emmetEnd}}});
 
         res.json(orders);
     }
@@ -68,6 +68,7 @@ app.get('/forsale', async (req, res) => {
 });
 
 //for saving new proj
+//naming convention is pretty ugly at this point, might change
 app.post('/users/:id/projects', async (req, res) => {
     try {
         const title = req.body.title;
