@@ -7,6 +7,7 @@ import {OrbitControls, Environment, useGLTF, ContactShadows, useTexture} from '@
 
 
 //import {ModelComponent} from './modelComponent.jsx'; deprecated
+import {Board_Round} from './modelComponents/Board_Round.jsx';
 import {Board_Rect} from './modelComponents/Board_Rect.jsx';
 import {Bowl} from './modelComponents/Bowl.jsx';
 
@@ -27,23 +28,24 @@ export default function DisplayModel({projType, selectedDesign, imageArray, imag
             defaultY: 0,
             defaultScale: [0.5, 0.5, 0.5],
             defaultRot: [Math.PI / 2, 0, 0]
+        },
+        'CuttingBoardRound': {
+            defaultAngle: 0,
+            defaultY: 0,
+            defaultScale: [0.5, 0.5, 0.5],
+            defaultRot: [Math.PI / 2, 0, 0]
         }
     };
 
-    const [isSpinning, setIsSpinning] = useState(true);
-    const [isDecorating, setIsDecorating] = useState(false);
+    //scrapping decorate mode, realized the autoSpin was exclusively bothersome lol
     //Moved the decal info up to editcustomview, passed as prop to here
     const timer = useRef(null);
 
     const modelOpts = {
         'CuttingBoardRect': Board_Rect,
+        'CuttingBoardRound': Board_Round,
         'Bowl': Bowl
     };
-
-/*     const modelOpts = {
-        'CuttingBoardRect': '/board_rect_end.glb',
-        'Bowl': '/bowl_end.glb'
-    }; */
 
     const CurModel = modelOpts[projType] || Bowl;
 
@@ -126,30 +128,6 @@ export default function DisplayModel({projType, selectedDesign, imageArray, imag
         });
     }
 
-    function handleClick() {
-        if (!isDecorating) {
-            clearTimeout(timer.current);
-            setIsSpinning(false);
-        }
-    }
-
-    function handleUnClick() {
-        if (!isDecorating) {
-            timer.current = setTimeout(() => {
-                setIsSpinning(true);
-            }, 6000);
-        }
-    }
-
-    function toggleMode() {
-        if (isDecorating) {
-            setIsDecorating(false);
-        }
-        else {
-            setIsDecorating(true);
-        }
-    }
-
     function handleReturnToOrigin() {
         const cur = curModelDefaults[projType] || curModelDefaults['Bowl'];
         setDAngle(cur.defaultAngle);
@@ -209,10 +187,7 @@ export default function DisplayModel({projType, selectedDesign, imageArray, imag
                         dScale={dScale}
                     />
                     <OrbitControls 
-                        enabled={!isDecorating}
                         autoRotate={false}
-                        onStart={handleClick}
-                        onEnd={handleUnClick}
                     />
                 </Canvas>
             </div>
@@ -250,9 +225,6 @@ export default function DisplayModel({projType, selectedDesign, imageArray, imag
                     </div>
                     <button id="place-design-btn" onClick={() => handlePlaceDesign()}>
                         Place Design
-                    </button>
-                    <button id="toggle-dec-btn" onClick={() => toggleMode()}>
-                        Toggle to: {isDecorating ? "View Mode" : "Decorate Mode"}
                     </button>
                     <button id="return-to-origin-btn" onClick={() => handleReturnToOrigin()}>
                         Return To Origin

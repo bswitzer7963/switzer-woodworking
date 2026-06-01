@@ -126,6 +126,7 @@ function EditCustom({
             </button>
             <img id="dash-deco-icon"
                 src={image.filtered}
+                width={250} height={250}
                 alt={`Design #${i+1}`}
             />
             <button id="delete-deco" onClick={(e) => handleDelete(e, i)}>
@@ -159,8 +160,8 @@ function EditCustom({
                     <option value='CuttingBoardRect'>
                         Rectangle CuttingBoard
                     </option>
-                    <option value='Board-Square'>
-                        Square CuttingBoard
+                    <option value='CuttingBoardRound'>
+                        Round CuttingBoard
                     </option>
                     <option value='Bat'>
                         Bat
