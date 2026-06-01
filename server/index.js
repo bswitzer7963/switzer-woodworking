@@ -7,7 +7,9 @@ require('dotenv').config();
 const app = express();
 
 app.use(cors());
-app.use(express.json());
+//https://stackoverflow.com/questions/60947294/error-413-payload-too-large-when-upload-image
+app.use(express.json({limit: '50mb'}));
+app.use(express.urlencoded({limit: '50mb', extended: true}));
 
 const PORT = process.env.PORT || 3000;
 const {PrismaClient} = require('@prisma/client')
@@ -75,7 +77,7 @@ app.post('/users/:id/projects', async (req, res) => {
         const imgList = req.body.imgList;
         const imgPosList = req.body.imgInfo;
         const snap = req.body.snapshot;
-        const projStatus = 'Draft';
+        const projStatus = 'userSaved';
 
         const newProject = await prisma.project.create({
             data: {

@@ -65,6 +65,7 @@ export default function EditCustomView({curState, curUser, setCurState}) {
     }
 }
 
+//Will make this less horrible
 function EditCustom({
     curState, curUser, setCurState, imageArray, setImageArray, curProject, setCurProject, selectedDesign, setSelectedDesign, setImageInfoArray, imageInfoArray,
     dAngle, setDAngle, dPos, setDPos, dRot, setDRot, dScale, setDScale
@@ -79,30 +80,30 @@ function EditCustom({
     }
 
     //DC to: https://stackoverflow.com/questions/18650168/convert-blob-to-base64
-    function blobToBase64(blob) {
+/*     function blobToBase64(blob) {
         return new Promise((resolve, _) => {
             const reader = new FileReader();
             reader.onloadend = () => resolve(reader.result);
             reader.readAsDataURL(blob);
         });
-    }
+    } */
 
     async function handleSaveProject() {
         const canvas = document.getElementById("three-canvas-space");
         const snapshot = await html2canvas(canvas);
         const ssUrl = snapshot.toDataURL('image/png');
 
-        const saveable = []
+/*         const saveable = []
 
         for (const img of imageArray) {
             const orig = img.orig.startsWith('blob:') ? await blobToBase64(img.orig) : img.orig;
             const filtered = img.filtered.startsWith('blob:') ? await blobToBase64(img.filtered) : img.filtered;
             saveable.push({orig, filtered});
-        }
+        } */
 
         await api.post(`/users/${curUser.userID}/projects`, {
             ...curProject,
-            imgList: saveable,
+            imgList: imageArray,
             imgInfo: imageInfoArray,
             creatorID: curUser.userID,
             snapshot: ssUrl
@@ -111,7 +112,10 @@ function EditCustom({
 
 
     const imageList = imageArray.map((image, i) => (
-        <li key={i} className="dash-deco-opt" onClick={() => setSelectedDesign(i)}>
+        <li key={i} className="dash-deco-opt" onClick={() => {
+
+            setSelectedDesign(i);
+        }}>
             <button id="edit-deco" onClick={(e) => {
                 setSelectedDesign(i);
                 setCurState({...curState, mode: 'image'});
@@ -276,12 +280,13 @@ function ImageFilter({curState, setCurState, imageArray, setImageArray, curProje
         img.src = urlWOBG;
     }
 
-    async function handleSave() {
+/*     async function handleSave() {
         const canvas = canvasRef.current;
         canvas.toBlob((blob) => {
             const url = URL.createObjectURL(blob);
+            canvas.toDataURL('image/png')
 
-            //Should probably switch to 1 indexing cuz this is ugly
+            //Should probably switch to 1 indexing cuz this is ugly (but i be lyin sometimes)
             if (selectedDesign !== null) {
                 let temp = [...imageArray];
                 temp[selectedDesign] = {...temp[selectedDesign], filtered: url};
@@ -290,10 +295,30 @@ function ImageFilter({curState, setCurState, imageArray, setImageArray, curProje
             else {
                 setImageArray([...imageArray, {orig: image.src, filtered: url}]);
             }
+            
             setSelectedDesign(null);
             setCurState({...curState, mode: 'edit'});
         }, 'image/png');
         setSelectedDesign(null);
+    } */
+
+    //Moving to regular base64, the conversions seemed unneccessary for the scale of the site
+    async function handleSave() {
+        const canvas = canvasRef.current;
+        const url = canvas.toDataURL('image/png')
+        //Should probably switch to 1 indexing cuz this is ugly (but i be lyin sometimes)
+        if (selectedDesign !== null) {
+            let temp = [...imageArray];
+            temp[selectedDesign] = {...temp[selectedDesign], filtered: url};
+            setImageArray(temp);
+        }
+        else {
+            setImageArray([...imageArray, {orig: image.src, filtered: url}]);
+        }
+            
+        setSelectedDesign(null);
+        setCurState({...curState, mode: 'edit'});
+
     }
 
     function handleCancel() {

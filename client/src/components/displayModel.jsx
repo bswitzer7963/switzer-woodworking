@@ -52,7 +52,7 @@ export default function DisplayModel({projType, selectedDesign, imageArray, imag
         setDPos([Math.cos(cur.defaultAngle), cur.defaultY, Math.sin(cur.defaultAngle)]);
         setDScale(cur.defaultScale);
         setDRot(cur.defaultRot);
-    }, []);
+    }, [selectedDesign]);
 
     function move(dir) {
         if (projType.startsWith('Cutting')) {
@@ -193,7 +193,7 @@ export default function DisplayModel({projType, selectedDesign, imageArray, imag
     return (
         <div id="cavas-w-dash">
             <div id="three-canvas-space">
-                <Canvas camera={{position: [0, 2, 4], near: 0.025}}>
+                <Canvas camera={{position: [0, 2, 4], near: 0.025}} gl={{preserveDrawingBuffer: true}}>
                     {/* <Environment files="/background.hdr" background blur={0.1}/> */}
                     <Environment preset="forest" background/>
                     <fog attach="fog" args={['black', 15, 20]} />

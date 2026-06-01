@@ -1,3 +1,5 @@
+//DEPRECATED AS OF NOW
+
 import React from 'react'
 import { useGLTF, Decal, useTexture } from '@react-three/drei'
 
