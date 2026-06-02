@@ -14,6 +14,8 @@ export default function Design({url, pos, rot, scale, opac}) {
             map={texture}
             transparent
             opacity={opac}
+            blending={3}
+            premultipliedAlpha
             polygonOffset
             polygonOffsetFactor={-1}
           />

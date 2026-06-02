@@ -25,7 +25,7 @@ export function Board_Rect({dUrl, dPos, dRot, dScale, imageArray, imageInfoArray
             pos={info.pos}
             rot={info.rot}
             scale={info.scale}
-            opac={0.5}
+            opac={1}
         />
       )
     });
@@ -39,7 +39,7 @@ export function Board_Rect({dUrl, dPos, dRot, dScale, imageArray, imageInfoArray
             pos={dPos}
             rot={dRot}
             scale={dScale}
-            opac={0.3}
+            opac={0.8}
         />
     )
   }
@@ -57,3 +57,5 @@ export function Board_Rect({dUrl, dPos, dRot, dScale, imageArray, imageInfoArray
 }
 
 useGLTF.preload('/board_rect_end.glb');
+
+

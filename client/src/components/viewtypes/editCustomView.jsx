@@ -125,7 +125,7 @@ function EditCustom({
                 WRENCH
             </button>
             <img id="dash-deco-icon"
-                src={image.filtered}
+                src={image.orig}
                 width={250} height={250}
                 alt={`Design #${i+1}`}
             />
@@ -232,9 +232,11 @@ function ImageFilter({curState, setCurState, imageArray, setImageArray, curProje
     const [isLoading, setIsLoading] = useState(false);
     const [settings, setSettings] = useState({
         saturation: 200,
-        inversion: 0,
-        contrast: 200,
-        grayscale: 100
+        inversion: 100,
+        contrast: 300,
+        grayscale: 100,
+        sepia: 100,
+        brightness: 50
     });
     const [removeBG, setRemoveBG] = useState(true);
 
@@ -263,8 +265,9 @@ function ImageFilter({curState, setCurState, imageArray, setImageArray, curProje
         canvasCtx.drawImage(image, 0, 0);
     }
 
+    //Just learned about sepia for the first time, so lucky that exists, otherwise i was about to tweak the color ranges of the canvas lol
     function generateFilter() {
-        return `saturate(${settings.saturation}%) invert(${settings.inversion}%) contrast(${settings.contrast}%) grayscale(${settings.grayscale}%)`;
+        return `saturate(${settings.saturation}%) grayscale(${settings.grayscale}%) invert(${settings.inversion}%) contrast(${settings.contrast}%) sepia(${settings.sepia}%) brightness(${settings.brightness}%)`;
     }
 
     async function handleFileChange(cur) {
@@ -367,8 +370,8 @@ function ImageFilter({curState, setCurState, imageArray, setImageArray, curProje
                     type="checkbox"
                     className="slider round"
                     id="inversion"
-                    checked={settings.inversion === 100}
-                    onChange={(e) => updateSetting('inversion', e.target.checked ? 100 : 0)}
+                    checked={settings.inversion === 0}
+                    onChange={(e) => updateSetting('inversion', e.target.checked ? 0 : 100)}
                 />
                 <label className="switch" htmlFor="remove-bg">
                     Remove Background

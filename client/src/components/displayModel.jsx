@@ -20,26 +20,25 @@ export default function DisplayModel({projType, selectedDesign, imageArray, imag
             defaultAngle: Math.PI / 4,
             defaultY: 0.75,
             defaultScale: [1, 1, 1],
-            defaultRot: [0, 0, 0]
+            defaultRot: [0, Math.atan2(Math.cos(Math.PI / 4), Math.sin(Math.PI / 4)), 0]
 
         },
         'CuttingBoardRect': {
             defaultAngle: 0,
-            defaultY: 0,
-            defaultScale: [0.5, 0.5, 0.5],
+            defaultY: 0.1,
+            defaultScale: [1, 1, 0.2],
             defaultRot: [Math.PI / 2, 0, 0]
         },
         'CuttingBoardRound': {
             defaultAngle: 0,
-            defaultY: 0,
-            defaultScale: [0.5, 0.5, 0.5],
+            defaultY: 0.1,
+            defaultScale: [1, 1, 0.2],
             defaultRot: [Math.PI / 2, 0, 0]
         }
     };
 
     //scrapping decorate mode, realized the autoSpin was exclusively bothersome lol
     //Moved the decal info up to editcustomview, passed as prop to here
-    const timer = useRef(null);
 
     const modelOpts = {
         'CuttingBoardRect': Board_Rect,
