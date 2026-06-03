@@ -1,0 +1,33 @@
+body, html {
+    overflow-x: hidden;
+    overscroll-behavior: none;
+}
+
+#app {
+    min-height: 300vh;
+}
+
+#tinker_bg {
+    width: 120vw;
+    position: fixed;
+    top: 3vh;
+    left: -10vw;
+    z-index: 1;
+}
+
+#tinker_fg {
+    width: 120vw;
+    position: relative;
+    top: -2vh;
+    left: -10vw;
+    z-index: 2;
+    pointer-events: none;
+}
+
+#logo {
+    position: fixed;
+    top: 10vh;
+    left: 5vh;
+    z-index: 3;
+    scale: 0.7;
+}

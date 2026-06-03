@@ -10,7 +10,7 @@ export default function EditCustomView({curState, curUser, setCurState}) {
     if (curState.spec && typeof curState.spec !== 'string') {
         loadingSaved = true;
     }
-    const [imageArray, setImageArray] = useState(loadingSaved ? curState.spec.image : [{orig: '/quag_cleaned.png', filtered: '/quag_cleaned.png'}]);
+    const [imageArray, setImageArray] = useState(loadingSaved ? curState.spec.image : [{orig: '/Quagsire.webp', filtered: '/quag_cleaned.png'}]);
     const [imageInfoArray, setImageInfoArray] = useState(loadingSaved ? curState.spec.imagePos : []);
     const [selectedDesign, setSelectedDesign] = useState(null);
     const [curProject, setCurProject] = useState({
@@ -139,6 +139,7 @@ function EditCustom({
         <div id="edit-view">
             <DisplayModel 
                 projType={curProject.projType}
+                setSelectedDesign={setSelectedDesign}
                 selectedDesign={selectedDesign}
                 imageArray={imageArray}
                 dAngle={dAngle}

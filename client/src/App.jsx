@@ -12,7 +12,6 @@ import './App.css';
 
 import DisplayModel from './components/displayModel.jsx';
 
-
 function App() {
   const [curState, setCurState] = useState({curView: 'main', spec: null});
   const [curUser, setCurUser] = useState(null);

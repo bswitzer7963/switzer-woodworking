@@ -12,7 +12,7 @@ import {Board_Rect} from './modelComponents/Board_Rect.jsx';
 import {Bowl} from './modelComponents/Bowl.jsx';
 
 //remove projtype when able to send real project obj
-export default function DisplayModel({projType, selectedDesign, imageArray, imageInfoArray, setImageInfoArray,
+export default function DisplayModel({projType, setSelectedDesign, selectedDesign, imageArray, imageInfoArray, setImageInfoArray,
     dAngle, setDAngle, dPos, setDPos, dRot, setDRot, dScale, setDScale
 }) {
     const curModelDefaults = {
@@ -27,13 +27,13 @@ export default function DisplayModel({projType, selectedDesign, imageArray, imag
             defaultAngle: 0,
             defaultY: 0.1,
             defaultScale: [1, 1, 0.2],
-            defaultRot: [Math.PI / 2, 0, 0]
+            defaultRot: [Math.PI / 2, 0, Math.PI]
         },
         'CuttingBoardRound': {
             defaultAngle: 0,
             defaultY: 0.1,
             defaultScale: [1, 1, 0.2],
-            defaultRot: [Math.PI / 2, 0, 0]
+            defaultRot: [Math.PI / 2, 0, Math.PI]
         }
     };
 
@@ -62,9 +62,9 @@ export default function DisplayModel({projType, selectedDesign, imageArray, imag
                 const [x, y, z] = prev;
                 switch(dir) {
                     case 'up':
-                        return [x, y, z + 0.1];
-                    case 'down': 
                         return [x, y, z - 0.1];
+                    case 'down': 
+                        return [x, y, z + 0.1];
                     case 'left': 
                         return [x - 0.1, y, z];
                     case 'right': 
@@ -157,6 +157,7 @@ export default function DisplayModel({projType, selectedDesign, imageArray, imag
             };
             return arr;
         });
+        setSelectedDesign(null);
     }
 
 
@@ -171,8 +172,7 @@ export default function DisplayModel({projType, selectedDesign, imageArray, imag
     return (
         <div id="cavas-w-dash">
             <div id="three-canvas-space">
-                <Canvas camera={{position: [0, 2, 4], near: 0.025}} gl={{preserveDrawingBuffer: true}}>
-                    {/* <Environment files="/background.hdr" background blur={0.1}/> */}
+                <Canvas camera={{position: [0, 2, 4], near: 0.01}} gl={{preserveDrawingBuffer: true}}>
                     <Environment preset="forest" background/>
                     <fog attach="fog" args={['black', 15, 20]} />
                     <CurModel

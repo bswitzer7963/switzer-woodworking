@@ -1,8 +1,13 @@
 import {useState, useEffect} from 'react';
 import axios from 'axios';
+import { useScroll, useTransform, motion} from "framer-motion";
 
 //LOOKAT CHANGE FOR SALE TO TOP 3, MOVE FILTERS/SORT TO NEXT PAGE
 export default function MainView({curState, setCurState, curUser, setCurUser}) {
+    //https://motion.dev/docs/react-use-scroll
+    const { scrollY } = useScroll();
+    const opacIntro = useTransform(scrollY, [500, 650], [1,0]);
+
     const [curForSale, setCurForSale] = useState([]);
 
     //Need axios get call to set curForSale (do only top 3 here)
@@ -47,6 +52,11 @@ export default function MainView({curState, setCurState, curUser, setCurUser}) {
 
     return (
         <div id="main-view">
+            <div id="intro">
+                <img id="tinker_fg" src="/tinker_fore_cleaned.png" alt="FG"/>
+                <motion.img id="tinker_bg" src="/tinker_edited.png" alt="BG" style={{opacity: opacIntro}}/>   
+                <motion.img id="logo" src="/emmet_logo_reg.png" alt="LOGO" style={{opacity: opacIntro}}/>
+            </div>
             <div id="in-progress">
                 {inProgress}
             </div>

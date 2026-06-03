@@ -3,6 +3,8 @@ import { Decal, useTexture } from '@react-three/drei'
 
 export default function Design({url, pos, rot, scale, opac}) {
     const texture = useTexture(url || '/Quagsire.webp');
+    texture.flipX = false;
+
     return (
         <Decal
           debug
@@ -16,8 +18,10 @@ export default function Design({url, pos, rot, scale, opac}) {
             opacity={opac}
             blending={3}
             premultipliedAlpha
+            depthTest={false}
             polygonOffset
-            polygonOffsetFactor={-1}
+            polygonOffsetFactor={-10}
+            polygonOffsetUnits={-10}
           />
         </Decal>
       )

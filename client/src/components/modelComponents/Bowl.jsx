@@ -47,7 +47,7 @@ export function Bowl({dUrl, dPos, dRot, dScale, imageArray, imageInfoArray, sele
   return (
     <group dispose={null}>
       <mesh geometry={nodes.Sphere.geometry} material={materials.baked} />
-      <mesh geometry={nodes.Sphere001.geometry} material={materials.DecoLoc} scale={[1, 1.008, 1]}>
+      <mesh geometry={nodes.Sphere001.geometry} material={materials.DecoLoc} scale={[1, 1.003, 1]}>
         <meshBasicMaterial transparent={true} opacity={0} />
         {placedDesigns}
         {curDesign}

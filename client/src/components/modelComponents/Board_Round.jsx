@@ -46,7 +46,7 @@ export function Board_Round({dUrl, dPos, dRot, dScale, imageArray, imageInfoArra
 
   return (
     <group dispose={null}>
-      <mesh geometry={nodes.Cylinder001.geometry} material={materials['DecoLoc.001']} scale={[1, 1.008, 1]}>
+      <mesh geometry={nodes.Cylinder001.geometry} material={materials['DecoLoc.001']} scale={[1, 1.012, 1]}>
         <meshBasicMaterial transparent={true} opacity={0} />
         {placedDesigns}
         {curDesign}

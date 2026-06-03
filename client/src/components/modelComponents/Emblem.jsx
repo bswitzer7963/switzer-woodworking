@@ -7,30 +7,11 @@ import React from 'react'
 import { useGLTF } from '@react-three/drei'
 
 import Design from '../design.jsx';
+import msqr from '../../utils/msqr.js';
 
-export function Board_Rect({dUrl, dPos, dRot, dScale, imageArray, imageInfoArray, selectedDesign}) {
+export function Emblem({dUrl, dPos, dRot, dScale, imageArray, imageInfoArray, selectedDesign}) {
   const { nodes, materials } = useGLTF('/rect_cuttingboard.glb');
   
-  let placedDesigns = null;
-  if (imageInfoArray.length > 0) {
-    placedDesigns = imageInfoArray.map((info, i) => {
-
-      //To not render twice
-      if (!info || !imageArray[i] || i === selectedDesign) return null;
-
-      return (
-        <Design
-            key={i}
-            url={imageArray[i].filtered}
-            pos={info.pos}
-            rot={info.rot}
-            scale={info.scale}
-            opac={1}
-        />
-      )
-    });
-  }
-
   let curDesign = null;
   if (dUrl) {
     curDesign = (
@@ -55,5 +36,3 @@ export function Board_Rect({dUrl, dPos, dRot, dScale, imageArray, imageInfoArray
     </group>
   )
 }
-
-useGLTF.preload('/rect_cuttingboard.glb')
